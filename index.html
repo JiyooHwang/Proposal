@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>기획서 / 제안서 자동 생성기</title>
+<style>
+  :root {
+    --primary: #2c5aa0;
+    --primary-dark: #1e3f73;
+    --bg: #f5f6fa;
+    --panel: #ffffff;
+    --border: #e1e4eb;
+    --text: #1f2937;
+    --muted: #6b7280;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+  }
+  header {
+    background: var(--primary);
+    color: #fff;
+    padding: 14px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+  header h1 { font-size: 18px; margin: 0; font-weight: 600; }
+  .actions { display: flex; gap: 8px; }
+  button {
+    background: #fff;
+    color: var(--primary);
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.15s;
+  }
+  button:hover { background: #eef3fb; }
+  button.ghost {
+    background: transparent;
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.5);
+  }
+  button.ghost:hover { background: rgba(255,255,255,0.1); }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 420px 1fr;
+    gap: 16px;
+    padding: 16px;
+    height: calc(100vh - 60px);
+  }
+  .form-panel, .preview-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow-y: auto;
+  }
+  .form-panel { padding: 20px; }
+  .preview-panel { padding: 0; }
+
+  .field-group {
+    margin-bottom: 18px;
+  }
+  .field-group h3 {
+    font-size: 13px;
+    color: var(--primary-dark);
+    margin: 0 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  label {
+    display: block;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+  input, textarea, select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    font-size: 14px;
+    font-family: inherit;
+    margin-bottom: 10px;
+    background: #fafbfc;
+    color: var(--text);
+  }
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: #fff;
+  }
+  textarea { resize: vertical; min-height: 70px; }
+  .hint {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: -6px;
+    margin-bottom: 10px;
+  }
+
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  /* Document preview */
+  .doc {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 60px 70px;
+    background: #fff;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    line-height: 1.7;
+    font-size: 14px;
+    color: #222;
+  }
+  .doc-header {
+    text-align: center;
+    border-bottom: 3px double var(--primary);
+    padding-bottom: 24px;
+    margin-bottom: 32px;
+  }
+  .doc-type {
+    font-size: 13px;
+    color: var(--primary);
+    letter-spacing: 4px;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+  .doc-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: #111;
+    margin: 0 0 18px;
+    line-height: 1.4;
+  }
+  .doc-meta {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .doc-meta span strong { color: #333; margin-right: 4px; }
+
+  .doc h2 {
+    font-size: 17px;
+    color: var(--primary-dark);
+    border-left: 4px solid var(--primary);
+    padding-left: 10px;
+    margin: 28px 0 14px;
+  }
+  .doc p { margin: 0 0 12px; white-space: pre-wrap; }
+  .doc ul { margin: 0 0 12px; padding-left: 22px; }
+  .doc ul li { margin-bottom: 4px; }
+
+  .doc table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 13px;
+  }
+  .doc th, .doc td {
+    border: 1px solid #d0d4dc;
+    padding: 8px 12px;
+    text-align: left;
+  }
+  .doc th {
+    background: #eef3fb;
+    color: var(--primary-dark);
+    font-weight: 600;
+    width: 30%;
+  }
+  .empty {
+    color: #aaa;
+    font-style: italic;
+  }
+  .doc-footer {
+    margin-top: 50px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+  }
+
+  /* Print */
+  @media print {
+    header, .form-panel { display: none !important; }
+    .layout { display: block; height: auto; padding: 0; gap: 0; }
+    .preview-panel { border: none; overflow: visible; }
+    .doc {
+      box-shadow: none;
+      margin: 0;
+      max-width: 100%;
+      padding: 20mm;
+    }
+    @page { size: A4; margin: 0; }
+  }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; height: auto; }
+    .preview-panel { min-height: 600px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📋 기획서 / 제안서 자동 생성기</h1>
+  <div class="actions">
+    <button class="ghost" onclick="loadSample()">샘플 채우기</button>
+    <button class="ghost" onclick="resetForm()">초기화</button>
+    <button onclick="exportJSON()">저장(JSON)</button>
+    <button onclick="document.getElementById('importFile').click()">불러오기</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)" />
+    <button onclick="window.print()">PDF/인쇄</button>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- Form -->
+  <div class="form-panel">
+    <div class="field-group">
+      <h3>문서 기본 정보</h3>
+      <label>문서 종류</label>
+      <select id="docType" onchange="render()">
+        <option value="기획서">기획서</option>
+        <option value="제안서">제안서</option>
+        <option value="사업계획서">사업계획서</option>
+        <option value="프로젝트 계획서">프로젝트 계획서</option>
+      </select>
+      <label>제목</label>
+      <input id="title" placeholder="예: 신규 모바일 앱 출시 기획" oninput="render()" />
+      <div class="row">
+        <div>
+          <label>작성자</label>
+          <input id="author" placeholder="홍길동" oninput="render()" />
+        </div>
+        <div>
+          <label>소속/부서</label>
+          <input id="org" placeholder="기획팀" oninput="render()" />
+        </div>
+      </div>
+      <label>작성일</label>
+      <input id="date" type="date" oninput="render()" />
+    </div>
+
+    <div class="field-group">
+      <h3>개요</h3>
+      <label>배경 (왜 이 프로젝트가 필요한가?)</label>
+      <textarea id="background" placeholder="시장 환경, 문제 상황, 필요성 등" oninput="render()"></textarea>
+      <label>목적 (무엇을 달성하려 하는가?)</label>
+      <textarea id="purpose" placeholder="이 프로젝트의 핵심 목적" oninput="render()"></textarea>
+    </div>
+
+    <div class="field-group">
+      <h3>목표 및 주요 내용</h3>
+      <label>주요 목표 (한 줄에 하나씩)</label>
+      <textarea id="goals" placeholder="예:&#10;사용자 10만 명 확보&#10;매출 30% 증대" oninput="render()"></textarea>
+      <label>주요 추진 내용 (한 줄에 하나씩)</label>
+      <textarea id="content" placeholder="예:&#10;시장 분석 및 사용자 조사&#10;프로토타입 개발&#10;파일럿 운영" oninput="render()"></textarea>
+    </div>
+
+    <div class="field-group">
+      <h3>일정 및 예산</h3>
+      <div class="row">
+        <div>
+          <label>시작일</label>
+          <input id="startDate" type="date" oninput="render()" />
+        </div>
+        <div>
+          <label>종료일</label>
+          <input id="endDate" type="date" oninput="render()" />
+        </div>
+      </div>
+      <label>주요 일정 (단계: 기간 형식, 한 줄에 하나)</label>
+      <textarea id="schedule" placeholder="예:&#10;1단계 기획: 2026.05 ~ 2026.06&#10;2단계 개발: 2026.07 ~ 2026.09" oninput="render()"></textarea>
+      <label>예산 (총액)</label>
+      <input id="budget" placeholder="예: 50,000,000 원" oninput="render()" />
+      <label>예산 세부 내역 (항목: 금액, 한 줄에 하나)</label>
+      <textarea id="budgetDetail" placeholder="예:&#10;인건비: 30,000,000원&#10;장비/시스템: 15,000,000원" oninput="render()"></textarea>
+    </div>
+
+    <div class="field-group">
+      <h3>기대효과 및 결론</h3>
+      <label>기대효과 (한 줄에 하나씩)</label>
+      <textarea id="effects" placeholder="예:&#10;브랜드 인지도 향상&#10;신규 매출원 확보" oninput="render()"></textarea>
+      <label>결론 / 요청사항</label>
+      <textarea id="conclusion" placeholder="결재/검토 요청 등" oninput="render()"></textarea>
+    </div>
+  </div>
+
+  <!-- Preview -->
+  <div class="preview-panel">
+    <div class="doc" id="doc"></div>
+  </div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const STORAGE_KEY = 'proposal-tool-data-v1';
+
+const fields = ['docType','title','author','org','date','background','purpose',
+  'goals','content','startDate','endDate','schedule','budget','budgetDetail',
+  'effects','conclusion'];
+
+function getData() {
+  const data = {};
+  fields.forEach(f => data[f] = $(f).value);
+  return data;
+}
+
+function setData(data) {
+  fields.forEach(f => { if (data[f] !== undefined) $(f).value = data[f]; });
+}
+
+function formatDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (isNaN(d)) return iso;
+  return `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일`;
+}
+
+function escapeHTML(s) {
+  return (s || '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  })[c]);
+}
+
+function listFromText(text) {
+  const lines = (text || '').split('\n').map(l => l.trim()).filter(Boolean);
+  if (lines.length === 0) return '';
+  return '<ul>' + lines.map(l => `<li>${escapeHTML(l)}</li>`).join('') + '</ul>';
+}
+
+function emptyOr(html, placeholder) {
+  return html || `<p class="empty">${placeholder}</p>`;
+}
+
+function render() {
+  const d = getData();
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+
+  const period = (d.startDate || d.endDate)
+    ? `${formatDate(d.startDate) || '미정'} ~ ${formatDate(d.endDate) || '미정'}`
+    : '';
+
+  let html = `
+    <div class="doc-header">
+      <div class="doc-type">${escapeHTML(d.docType || '기획서')}</div>
+      <h1 class="doc-title">${escapeHTML(d.title) || '<span class="empty">제목을 입력하세요</span>'}</h1>
+      <div class="doc-meta">
+        ${d.author ? `<span><strong>작성자</strong>${escapeHTML(d.author)}</span>` : ''}
+        ${d.org ? `<span><strong>소속</strong>${escapeHTML(d.org)}</span>` : ''}
+        ${d.date ? `<span><strong>작성일</strong>${formatDate(d.date)}</span>` : ''}
+      </div>
+    </div>
+
+    <h2>1. 개요</h2>
+    <table>
+      <tr><th>배경</th><td>${escapeHTML(d.background) || '<span class="empty">-</span>'}</td></tr>
+      <tr><th>목적</th><td>${escapeHTML(d.purpose) || '<span class="empty">-</span>'}</td></tr>
+      ${period ? `<tr><th>추진 기간</th><td>${period}</td></tr>` : ''}
+    </table>
+
+    <h2>2. 주요 목표</h2>
+    ${emptyOr(listFromText(d.goals), '목표를 입력하세요')}
+
+    <h2>3. 주요 추진 내용</h2>
+    ${emptyOr(listFromText(d.content), '추진 내용을 입력하세요')}
+
+    <h2>4. 추진 일정</h2>
+    ${emptyOr(listFromText(d.schedule), '일정을 입력하세요')}
+
+    <h2>5. 소요 예산</h2>
+    ${d.budget ? `<p><strong>총 예산: </strong>${escapeHTML(d.budget)}</p>` : ''}
+    ${emptyOr(listFromText(d.budgetDetail), '세부 내역을 입력하세요')}
+
+    <h2>6. 기대효과</h2>
+    ${emptyOr(listFromText(d.effects), '기대효과를 입력하세요')}
+
+    <h2>7. 결론 및 요청사항</h2>
+    <p>${escapeHTML(d.conclusion) || '<span class="empty">-</span>'}</p>
+
+    <div class="doc-footer">
+      ${escapeHTML(d.org || '')} ${d.org && d.author ? '·' : ''} ${escapeHTML(d.author || '')}
+    </div>
+  `;
+  $('doc').innerHTML = html;
+}
+
+function resetForm() {
+  if (!confirm('모든 입력을 초기화하시겠습니까?')) return;
+  fields.forEach(f => $(f).value = '');
+  $('docType').value = '기획서';
+  localStorage.removeItem(STORAGE_KEY);
+  render();
+}
+
+function loadSample() {
+  setData({
+    docType: '기획서',
+    title: '신규 모바일 앱 \"DailyFit\" 출시 기획',
+    author: '김기획',
+    org: '서비스기획팀',
+    date: '2026-04-29',
+    background: '최근 헬스케어 시장의 모바일 사용자가 연 25% 증가하고 있으며,\n기존 자사 서비스는 웹 중심으로 모바일 사용자 이탈이 발생하고 있음.',
+    purpose: '모바일 사용자 경험을 개선하고 신규 고객층을 확보하여\n시장 점유율을 확대하고자 함.',
+    goals: 'MAU 10만 명 확보\n앱스토어 평점 4.5 이상 유지\n구독 전환율 8% 달성',
+    content: '시장 및 경쟁사 분석\n핵심 기능 정의 및 UX 설계\n앱 개발 및 베타 테스트\n공식 출시 및 마케팅 캠페인',
+    startDate: '2026-05-01',
+    endDate: '2026-12-31',
+    schedule: '1단계 기획/설계: 2026.05 ~ 2026.06\n2단계 개발: 2026.07 ~ 2026.09\n3단계 베타 테스트: 2026.10 ~ 2026.11\n4단계 공식 출시: 2026.12',
+    budget: '120,000,000 원',
+    budgetDetail: '인건비: 70,000,000원\n개발/인프라: 30,000,000원\n마케팅: 15,000,000원\n예비비: 5,000,000원',
+    effects: '신규 모바일 사용자 유입 확대\n브랜드 인지도 및 고객 만족도 향상\n구독 기반의 안정적 매출 구조 확보',
+    conclusion: '본 기획안에 대한 검토 및 승인을 요청드립니다.\n승인 시 5월부터 즉시 추진 예정입니다.'
+  });
+  render();
+}
+
+function exportJSON() {
+  const data = getData();
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${data.title || 'proposal'}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importJSON(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (evt) => {
+    try {
+      setData(JSON.parse(evt.target.result));
+      render();
+    } catch {
+      alert('파일을 읽을 수 없습니다.');
+    }
+  };
+  reader.readAsText(file);
+}
+
+// Restore saved data on load
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    try { setData(JSON.parse(saved)); } catch {}
+  }
+  if (!$('date').value) $('date').value = new Date().toISOString().slice(0, 10);
+  render();
+});
+</script>
+</body>
+</html>
