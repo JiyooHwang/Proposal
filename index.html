@@ -191,6 +191,55 @@
   }
   .chip-add:hover { background: #eef3fb; }
 
+  /* Logo uploader */
+  .logo-uploader {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .logo-preview {
+    width: 90px;
+    height: 60px;
+    border: 1px dashed var(--border);
+    border-radius: 5px;
+    background: #fafbfc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .logo-preview.empty { color: var(--muted); font-size: 11px; font-style: italic; }
+  .logo-preview img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    image-rendering: -webkit-optimize-contrast;
+  }
+  .logo-buttons { display: flex; flex-direction: column; gap: 6px; }
+
+  /* Document logo */
+  .doc-logo {
+    margin-bottom: 16px;
+    display: flex;
+  }
+  .doc-logo.pos-left { justify-content: flex-start; }
+  .doc-logo.pos-center { justify-content: center; }
+  .doc-logo.pos-right { justify-content: flex-end; }
+  .doc-logo img {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+  .doc-logo.size-small img { max-height: 40px; }
+  .doc-logo.size-medium img { max-height: 70px; }
+  .doc-logo.size-large img { max-height: 110px; }
+
   /* AI panel */
   .ai-panel {
     background: linear-gradient(135deg, #f4f1ff 0%, #eef3fb 100%);
@@ -442,6 +491,34 @@
       </div>
       <label>작성일</label>
       <input id="date" type="date" oninput="render()" />
+
+      <label>회사 로고 <span class="hint-inline">(PNG·JPG·SVG, 자동 비율 유지)</span></label>
+      <div class="logo-uploader">
+        <div id="logoPreview" class="logo-preview empty">로고 없음</div>
+        <div class="logo-buttons">
+          <input type="file" id="logoFile" accept="image/*" style="display:none" onchange="onLogoUpload(event)" />
+          <button type="button" class="mini-btn" onclick="document.getElementById('logoFile').click()">로고 업로드</button>
+          <button type="button" class="mini-btn danger" onclick="removeLogo()">제거</button>
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>로고 위치</label>
+          <select id="logoPosition" onchange="onLogoOptionChange()">
+            <option value="center">상단 중앙</option>
+            <option value="left">상단 왼쪽</option>
+            <option value="right">상단 오른쪽</option>
+          </select>
+        </div>
+        <div>
+          <label>로고 크기</label>
+          <select id="logoSize" onchange="onLogoOptionChange()">
+            <option value="small">작게</option>
+            <option value="medium" selected>보통</option>
+            <option value="large">크게</option>
+          </select>
+        </div>
+      </div>
     </div>
 
     <div class="field-group">
@@ -710,7 +787,13 @@ function renderDoc() {
   const v = state.values;
   const docType = v.docType || '제안서';
 
+  const logo = getLogo();
+  const logoPos = localStorage.getItem(LOGO_POS_KEY) || 'center';
+  const logoSize = localStorage.getItem(LOGO_SIZE_KEY) || 'medium';
+  const logoHTML = logo ? `<div class="doc-logo pos-${logoPos} size-${logoSize}"><img src="${logo}" alt="회사 로고" /></div>` : '';
+
   let html = `
+    ${logoHTML}
     <div class="doc-header">
       <div class="doc-type">${escapeHTML(docType)}</div>
       <h1 class="doc-title ${v.title ? '' : 'ed-empty'}" data-bind="title" contenteditable="true">${escapeHTML(v.title || '')}</h1>
@@ -738,6 +821,62 @@ function renderDoc() {
 function render() { renderForm(); renderDoc(); }
 
 // 미리보기 인라인 편집 → state 동기화 (폼 input도 함께 갱신, 단 doc은 재렌더하지 않음)
+// ----- 회사 로고 -----
+const LOGO_KEY = 'proposal-tool-logo';
+const LOGO_POS_KEY = 'proposal-tool-logo-pos';
+const LOGO_SIZE_KEY = 'proposal-tool-logo-size';
+
+function getLogo() { return localStorage.getItem(LOGO_KEY) || ''; }
+
+function refreshLogoPreview() {
+  const el = $('logoPreview');
+  const logo = getLogo();
+  if (logo) {
+    el.classList.remove('empty');
+    el.innerHTML = `<img src="${logo}" alt="logo" />`;
+  } else {
+    el.classList.add('empty');
+    el.textContent = '로고 없음';
+  }
+}
+
+function onLogoUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) {
+    alert('로고 파일은 2MB 이하여야 합니다.');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = (evt) => {
+    try {
+      localStorage.setItem(LOGO_KEY, evt.target.result);
+    } catch (err) {
+      alert('로고 저장 실패: ' + err.message);
+      return;
+    }
+    refreshLogoPreview();
+    renderDoc();
+  };
+  reader.readAsDataURL(file);
+  // 같은 파일 재선택 가능하도록 초기화
+  e.target.value = '';
+}
+
+function removeLogo() {
+  if (!getLogo()) return;
+  if (!confirm('로고를 제거하시겠습니까?')) return;
+  localStorage.removeItem(LOGO_KEY);
+  refreshLogoPreview();
+  renderDoc();
+}
+
+function onLogoOptionChange() {
+  localStorage.setItem(LOGO_POS_KEY, $('logoPosition').value);
+  localStorage.setItem(LOGO_SIZE_KEY, $('logoSize').value);
+  renderDoc();
+}
+
 // 폼 카드 제목 편집 → state.titles 동기화 + 미리보기 헤딩에도 즉시 반영
 function bindFormTitleEditing() {
   const host = $('sectionsHost');
@@ -1040,6 +1179,12 @@ window.addEventListener('DOMContentLoaded', () => {
   const savedModel = localStorage.getItem(AI_MODEL_STORAGE);
   if (savedKey) $('aiApiKey').value = savedKey;
   if (savedModel) $('aiModel').value = savedModel;
+  // 로고 복원
+  const savedPos = localStorage.getItem(LOGO_POS_KEY);
+  const savedSize = localStorage.getItem(LOGO_SIZE_KEY);
+  if (savedPos) $('logoPosition').value = savedPos;
+  if (savedSize) $('logoSize').value = savedSize;
+  refreshLogoPreview();
   bindDocEditing();
   bindFormTitleEditing();
   saveAndRender();
