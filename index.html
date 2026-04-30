@@ -433,6 +433,8 @@
     <button onclick="exportJSON()">저장(JSON)</button>
     <button onclick="document.getElementById('importFile').click()">불러오기</button>
     <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)" />
+    <button onclick="exportWord()">Word(.doc)</button>
+    <button onclick="exportPPT()">PPT(.pptx)</button>
     <button onclick="window.print()">PDF/인쇄</button>
   </div>
 </header>
@@ -535,6 +537,7 @@
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
 <script>
 const $ = (id) => document.getElementById(id);
 const STORAGE_KEY = 'proposal-tool-data-v2';
@@ -1014,6 +1017,147 @@ function exportJSON() {
   a.download = `${data.title || 'proposal'}.json`;
   a.click();
   URL.revokeObjectURL(url);
+}
+
+// ----- Word(.doc) 내보내기 -----
+function exportWord() {
+  const v = state.values;
+  const title = v.title || 'proposal';
+  // 미리보기 그대로의 HTML을 가져오되 contenteditable/data-* 속성 제거
+  const cleaned = $('doc').cloneNode(true);
+  cleaned.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+  cleaned.querySelectorAll('.ed-empty').forEach(el => el.classList.remove('ed-empty'));
+
+  const wordCSS = `
+    <style>
+      body { font-family: '맑은 고딕','Malgun Gothic',sans-serif; font-size: 11pt; line-height: 1.6; color: #222; }
+      h1 { font-size: 22pt; text-align: center; margin: 0 0 12pt; }
+      h2 { font-size: 14pt; color: #1e3f73; border-left: 4pt solid #2c5aa0; padding-left: 8pt; margin: 18pt 0 8pt; }
+      h3 { font-size: 12pt; margin: 10pt 0 4pt; }
+      .doc-type { text-align: center; color: #2c5aa0; letter-spacing: 4pt; font-weight: bold; margin-bottom: 6pt; }
+      .doc-meta { text-align: center; font-size: 10pt; color: #666; margin-bottom: 10pt; }
+      .doc-meta span { margin: 0 8pt; }
+      .doc-header { border-bottom: 1.5pt solid #2c5aa0; padding-bottom: 12pt; margin-bottom: 16pt; }
+      .doc-logo { text-align: center; margin-bottom: 12pt; }
+      .doc-logo.pos-left { text-align: left; }
+      .doc-logo.pos-right { text-align: right; }
+      .doc-logo img { max-height: 80pt; }
+      table { border-collapse: collapse; width: 100%; margin: 8pt 0; }
+      th, td { border: 0.75pt solid #999; padding: 5pt 8pt; vertical-align: top; }
+      th { background: #eef3fb; width: 25%; text-align: left; }
+      ul { margin: 4pt 0 4pt 18pt; padding: 0; }
+      li { margin-bottom: 2pt; }
+      .num { color: inherit; }
+      .doc-footer { text-align: center; color: #888; font-size: 9pt; margin-top: 24pt; border-top: 0.5pt solid #ccc; padding-top: 8pt; }
+    </style>
+  `;
+  const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office"
+    xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="utf-8"><title>${escapeHTML(title)}</title>${wordCSS}</head>
+<body>${cleaned.innerHTML}</body></html>`;
+
+  const blob = new Blob(['﻿', html], { type: 'application/msword' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${title}.doc`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ----- PowerPoint(.pptx) 내보내기 -----
+function exportPPT() {
+  if (typeof PptxGenJS === 'undefined') {
+    alert('PPT 라이브러리 로딩 중입니다. 잠시 후 다시 시도해주세요.');
+    return;
+  }
+  const v = state.values;
+  const docType = v.docType || '제안서';
+  const title = v.title || docType;
+  const pptx = new PptxGenJS();
+  pptx.layout = 'LAYOUT_WIDE';  // 13.33 x 7.5 in
+  pptx.title = title;
+  pptx.author = v.author || '';
+  pptx.company = v.org || '';
+
+  const PRIMARY = '2C5AA0';
+  const DARK = '1E3F73';
+  const TEXT = '222222';
+  const MUTED = '666666';
+
+  // 표지 슬라이드
+  const cover = pptx.addSlide();
+  cover.background = { color: 'FFFFFF' };
+  const logo = getLogo();
+  if (logo) {
+    // 로고는 표지 상단 중앙에 배치
+    cover.addImage({ data: logo, x: 5.66, y: 0.6, w: 2.0, h: 1.0, sizing: { type: 'contain', w: 2.0, h: 1.0 } });
+  }
+  cover.addText(docType, { x: 0.5, y: 2.0, w: 12.33, h: 0.5, align: 'center', fontSize: 18, color: PRIMARY, bold: true, charSpacing: 8 });
+  cover.addText(title, { x: 0.5, y: 2.7, w: 12.33, h: 1.6, align: 'center', fontSize: 40, color: TEXT, bold: true });
+  const metaParts = [];
+  if (v.author) metaParts.push(`작성자: ${v.author}`);
+  if (v.org) metaParts.push(`소속: ${v.org}`);
+  if (v.date) metaParts.push(`작성일: ${formatDate(v.date)}`);
+  if (metaParts.length) {
+    cover.addText(metaParts.join('   ·   '), { x: 0.5, y: 5.0, w: 12.33, h: 0.5, align: 'center', fontSize: 16, color: MUTED });
+  }
+
+  // 섹션별 슬라이드
+  let n = 0;
+  SCHEMA.forEach(s => {
+    if (!state.enabled[s.id]) return;
+    n++;
+    const slide = pptx.addSlide();
+    slide.background = { color: 'FFFFFF' };
+    const sectionTitle = `${n}. ${getTitle(s.id, s.title, docType)}`;
+    // 상단 헤더 바
+    slide.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: 13.33, h: 0.7, fill: { color: PRIMARY } });
+    slide.addText(sectionTitle, { x: 0.4, y: 0.05, w: 12.5, h: 0.6, fontSize: 22, color: 'FFFFFF', bold: true });
+
+    let bodyY = 1.0;
+    if (s.children) {
+      s.children.forEach((c, i) => {
+        const subTitle = `${n}-${i+1}) ${getTitle(c.id, c.label, docType)}`;
+        const val = v[c.id] || '';
+        slide.addText(subTitle, { x: 0.5, y: bodyY, w: 12.33, h: 0.4, fontSize: 16, color: DARK, bold: true });
+        bodyY += 0.45;
+        const lines = val.split('\n').map(l => l.trim()).filter(Boolean);
+        if (lines.length) {
+          const items = lines.map(l => ({ text: l, options: { bullet: c.type === 'textarea' ? { code: '25CF' } : false } }));
+          const h = Math.min(0.35 * lines.length, 1.5);
+          slide.addText(items, { x: 0.7, y: bodyY, w: 12.0, h: h, fontSize: 14, color: TEXT, valign: 'top' });
+          bodyY += h + 0.1;
+        } else {
+          bodyY += 0.2;
+        }
+      });
+    } else if (s.single) {
+      const val = v[s.single.id] || '';
+      const lines = val.split('\n').map(l => l.trim()).filter(Boolean);
+      if (lines.length) {
+        const items = lines.map(l => ({ text: l, options: { bullet: { code: '25CF' } } }));
+        slide.addText(items, { x: 0.7, y: bodyY, w: 12.0, h: 5.5, fontSize: 16, color: TEXT, valign: 'top' });
+      }
+    } else if (s.table) {
+      const rows = s.table.map(f => {
+        const val = v[f.id] || '';
+        const thLabel = getTitle('th_' + f.id, f.label);
+        return [
+          { text: thLabel, options: { bold: true, fill: { color: 'EEF3FB' }, color: DARK, valign: 'middle' } },
+          { text: val || '-', options: { color: TEXT, valign: 'middle' } }
+        ];
+      });
+      slide.addTable(rows, {
+        x: 0.5, y: bodyY, w: 12.33,
+        colW: [3.0, 9.33],
+        fontSize: 13,
+        border: { type: 'solid', pt: 0.5, color: 'D0D4DC' }
+      });
+    }
+  });
+
+  pptx.writeFile({ fileName: `${title}.pptx` });
 }
 
 function importJSON(e) {
