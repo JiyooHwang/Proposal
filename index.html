@@ -873,17 +873,18 @@ function aiFieldSpec(docType) {
   const specs = [];
   SCHEMA.forEach(s => {
     if (!state.enabled[s.id]) return;
-    const stitle = pickTitle(s.title, docType);
+    // 사용자가 수정한 제목이 있으면 그것을 우선 사용
+    const stitle = getTitle(s.id, s.title, docType);
     if (s.children) {
       s.children.forEach(c => specs.push({
-        id: c.id, label: `${stitle} > ${pickTitle(c.label, docType)}`,
+        id: c.id, label: `${stitle} > ${getTitle(c.id, c.label, docType)}`,
         kind: c.type === 'textarea' ? 'list' : 'short'
       }));
     } else if (s.single) {
       specs.push({ id: s.single.id, label: stitle, kind: 'list' });
     } else if (s.table) {
       s.table.forEach(f => specs.push({
-        id: f.id, label: `${stitle} > ${f.label}`,
+        id: f.id, label: `${stitle} > ${getTitle('th_' + f.id, f.label)}`,
         kind: f.type === 'textarea' ? 'list' : 'short'
       }));
     }
