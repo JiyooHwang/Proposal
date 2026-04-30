@@ -403,38 +403,36 @@
     padding-top: 16px;
   }
 
-  /* ===== 테마: 모던 (다크 네이비 + 머스타드 베이지) ===== */
+  /* ===== 테마: 모던 (다크 그레이 + 머스타드 베이지) ===== */
   .doc.theme-modern {
     font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
-    color: #1f2937;
+    color: #e5e7eb;
     padding: 0;
     overflow: hidden;
-    background: #fff;
-  }
-  .doc.theme-modern .doc-logo {
-    background: #1d2733;
-    padding: 32px 60px 0 100px;
-    margin-bottom: 0;
+    background: #2d3138;
     position: relative;
   }
-  .doc.theme-modern .doc-logo::before,
-  .doc.theme-modern .doc-header::before,
-  .doc.theme-modern .doc-footer::before {
+  .doc.theme-modern::before {
     content: '';
     position: absolute;
     left: 0; top: 0; bottom: 0;
     width: 60px;
     background: #c2a577;
+    z-index: 0;
+  }
+  .doc.theme-modern > * { position: relative; z-index: 1; }
+  .doc.theme-modern .doc-logo {
+    padding: 32px 60px 0 100px;
+    margin-bottom: 0;
   }
   .doc.theme-modern .doc-logo img { filter: brightness(0) invert(1); }
   .doc.theme-modern .doc-header {
-    background: #1d2733;
+    background: transparent;
     color: #fff;
-    padding: 60px 60px 70px 100px;
-    margin: 0 0 0;
+    padding: 40px 60px 60px 100px;
+    margin: 0;
     border: none;
     text-align: left;
-    position: relative;
   }
   .doc.theme-modern .doc-type {
     color: #c2a577;
@@ -466,15 +464,14 @@
     font-weight: 500;
     margin-right: 6px;
   }
-  .doc.theme-modern .doc-meta strong + span,
-  .doc.theme-modern .doc-meta > span > span:not([class*="ed-"]):last-child { color: #fff; font-weight: 600; }
+  .doc.theme-modern .doc-meta [contenteditable="true"] { color: #fff; font-weight: 600; }
 
   .doc.theme-modern h2 {
     font-size: 22px;
-    color: #1d2733;
+    color: #fff;
     border: none;
     padding: 0 60px 0 100px;
-    margin: 48px 0 18px;
+    margin: 40px 0 16px;
     display: flex;
     align-items: center;
     gap: 14px;
@@ -483,7 +480,7 @@
   }
   .doc.theme-modern h2 .num {
     background: #c2a577;
-    color: #1d2733;
+    color: #2d3138;
     padding: 4px 10px;
     font-size: 13px;
     font-weight: 700;
@@ -493,7 +490,7 @@
   }
   .doc.theme-modern .sub-h {
     padding: 0 60px 0 100px;
-    color: #1d2733;
+    color: #f3f4f6;
     font-size: 14px;
     margin: 22px 0 8px;
     font-weight: 700;
@@ -502,6 +499,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
+    border: none;
   }
   .doc.theme-modern .sub-h::before {
     content: '';
@@ -513,7 +511,7 @@
   .doc.theme-modern ul {
     margin-left: 100px;
     margin-right: 60px;
-    color: #2c3540;
+    color: #d1d5db;
   }
   .doc.theme-modern ul li::marker { color: #c2a577; }
   .doc.theme-modern table {
@@ -523,33 +521,38 @@
     border: none;
   }
   .doc.theme-modern th {
-    background: #1d2733;
-    color: #fff;
+    background: #c2a577;
+    color: #2d3138;
     border: none;
-    font-weight: 600;
+    font-weight: 700;
     padding: 10px 14px;
     letter-spacing: 0.3px;
   }
   .doc.theme-modern td {
     border: none;
-    border-bottom: 1px solid #ece6da;
-    background: #faf7f1;
+    border-bottom: 1px solid #404550;
+    background: #353a42;
     padding: 10px 14px;
-    color: #2c3540;
+    color: #e5e7eb;
   }
-  .doc.theme-modern tr:nth-child(even) td { background: #f3eddd; }
+  .doc.theme-modern tr:nth-child(even) td { background: #3a4049; }
   .doc.theme-modern .doc-footer {
-    margin: 64px 0 0;
-    background: #1d2733;
+    margin: 56px 0 0;
+    background: transparent;
     color: #c2a577;
-    padding: 18px 60px 18px 100px;
+    padding: 18px 60px 28px 100px;
     border: none;
+    border-top: 1px solid #404550;
     font-size: 11px;
     letter-spacing: 2px;
     text-transform: uppercase;
     text-align: left;
-    position: relative;
   }
+  /* 미리보기 인라인 편집 호버/포커스 색을 다크 배경에 맞게 */
+  .doc.theme-modern [contenteditable="true"]:hover { background: rgba(194,165,119,0.15); }
+  .doc.theme-modern [contenteditable="true"]:focus { background: rgba(194,165,119,0.25); box-shadow: 0 0 0 2px rgba(194,165,119,0.5); }
+  .doc.theme-modern .ed-empty.ed-text::before,
+  .doc.theme-modern .ed-list.ed-empty li:empty::before { color: rgba(255,255,255,0.35); }
 
   /* ===== 테마: 미니멀 ===== */
   .doc.theme-minimal {
@@ -1302,17 +1305,19 @@ function exportWord() {
       .doc-meta { text-align: center; }
     `,
     modern: `
+      body { background: #2D3138; color: #E5E7EB; }
       h1 { font-size: 32pt; text-align: left; margin: 0 0 10pt; color: #fff; font-weight: 800; letter-spacing: -0.5pt; }
-      h2 { font-size: 18pt; color: #1D2733; border: none; padding: 0; margin: 28pt 0 10pt; font-weight: 700; }
-      h2 .num { background: #C2A577; color: #1D2733; padding: 2pt 8pt; margin-right: 8pt; font-size: 12pt; font-weight: 700; }
+      h2 { font-size: 18pt; color: #FFFFFF !important; border: none; padding: 0; margin: 28pt 0 10pt; font-weight: 700; }
+      h2 .num { background: #C2A577; color: #2D3138; padding: 2pt 8pt; margin-right: 8pt; font-size: 12pt; font-weight: 700; }
+      h3, .sub-h { color: #F3F4F6 !important; padding-left: 0; font-weight: 700; text-transform: uppercase; font-size: 11pt; letter-spacing: 0.5pt; margin: 16pt 0 6pt; }
       .doc-type { color: #C2A577; letter-spacing: 5pt; font-weight: 600; margin-bottom: 10pt; text-transform: uppercase; font-size: 9pt; }
-      .doc-header { background: #1D2733; color: #fff; padding: 30pt 30pt 36pt; margin: -10pt -10pt 24pt; text-align: left; border: none; }
+      .doc-header { background: #2D3138; color: #fff; padding: 30pt 30pt 36pt; margin: -10pt -10pt 24pt; text-align: left; border: none; }
       .doc-meta { text-align: left; color: #C2A577; margin-top: 14pt; letter-spacing: 1pt; }
-      .doc-meta strong { color: rgba(255,255,255,0.6); margin-right: 4pt; }
-      .sub-h { color: #1D2733; padding-left: 0; font-weight: 700; text-transform: uppercase; font-size: 11pt; letter-spacing: 0.5pt; margin: 16pt 0 6pt; }
-      th { background: #1D2733 !important; color: #fff !important; border: none !important; }
-      td { background: #FAF7F1 !important; border: none !important; border-bottom: 0.5pt solid #ECE6DA !important; }
-      .doc-footer { background: #1D2733; color: #C2A577; padding: 12pt 24pt; border: none !important; text-align: left; letter-spacing: 2pt; text-transform: uppercase; }
+      .doc-meta strong { color: #9CA3AF; margin-right: 4pt; }
+      p, ul, li { color: #D1D5DB !important; }
+      th { background: #C2A577 !important; color: #2D3138 !important; border: none !important; font-weight: 700 !important; }
+      td { background: #353A42 !important; color: #E5E7EB !important; border: none !important; border-bottom: 0.5pt solid #404550 !important; }
+      .doc-footer { background: #2D3138; color: #C2A577; padding: 12pt 24pt; border: none !important; border-top: 0.5pt solid #404550 !important; text-align: left; letter-spacing: 2pt; text-transform: uppercase; }
     `,
     minimal: `
       h1 { font-size: 26pt; text-align: left; margin: 0 0 10pt; font-weight: 300; }
@@ -1391,8 +1396,8 @@ function exportPPT() {
   if (v.date) metaParts.push(`작성일: ${formatDate(v.date)}`);
 
   if (themeName === 'modern') {
-    // 다크 네이비 + 베이지 좌측 스트립
-    cover.background = { color: '1D2733' };
+    // 다크 그레이 + 베이지 좌측 스트립
+    cover.background = { color: '2D3138' };
     cover.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: 0.8, h: 7.5, fill: { color: 'C2A577' } });
     if (logo) cover.addImage({ data: logo, x: 1.2, y: 0.5, w: 2.0, h: 1.0, sizing: { type: 'contain', w: 2.0, h: 1.0 } });
     cover.addText(docType, { x: 1.2, y: 2.0, w: 11.5, h: 0.4, align: 'left', fontSize: 14, color: 'C2A577', bold: true, charSpacing: 8 });
@@ -1425,24 +1430,36 @@ function exportPPT() {
     if (!state.enabled[s.id]) return;
     n++;
     const slide = pptx.addSlide();
-    slide.background = { color: 'FFFFFF' };
+    // 모던 테마는 슬라이드 전체 배경을 다크 그레이로
+    const isModern = themeName === 'modern';
+    slide.background = { color: isModern ? '2D3138' : 'FFFFFF' };
+    const headerColor = isModern ? '2D3138' : PRIMARY;
     const sectionTitle = `${n}. ${getTitle(s.id, s.title, docType)}`;
-    // 상단 헤더 바
-    slide.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: 13.33, h: 0.7, fill: { color: PRIMARY } });
-    slide.addText(sectionTitle, { x: 0.4, y: 0.05, w: 12.5, h: 0.6, fontSize: 22, color: 'FFFFFF', bold: true });
+    // 상단 헤더 바 (모던은 좌측 베이지 스트립)
+    if (isModern) {
+      slide.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: 0.4, h: 7.5, fill: { color: 'C2A577' } });
+    } else {
+      slide.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: 13.33, h: 0.7, fill: { color: headerColor } });
+    }
+    slide.addText(sectionTitle, isModern
+      ? { x: 0.7, y: 0.4, w: 12.5, h: 0.6, fontSize: 24, color: 'FFFFFF', bold: true }
+      : { x: 0.4, y: 0.05, w: 12.5, h: 0.6, fontSize: 22, color: 'FFFFFF', bold: true });
 
-    let bodyY = 1.0;
+    const subColor = isModern ? 'C2A577' : DARK;
+    const bodyTextColor = isModern ? 'E5E7EB' : TEXT;
+
+    let bodyY = isModern ? 1.4 : 1.0;
     if (s.children) {
       s.children.forEach((c, i) => {
         const subTitle = `${n}-${i+1}) ${getTitle(c.id, c.label, docType)}`;
         const val = v[c.id] || '';
-        slide.addText(subTitle, { x: 0.5, y: bodyY, w: 12.33, h: 0.4, fontSize: 16, color: DARK, bold: true });
+        slide.addText(subTitle, { x: isModern ? 0.7 : 0.5, y: bodyY, w: 12.33, h: 0.4, fontSize: 16, color: subColor, bold: true });
         bodyY += 0.45;
         const lines = val.split('\n').map(l => l.trim()).filter(Boolean);
         if (lines.length) {
           const items = lines.map(l => ({ text: l, options: { bullet: c.type === 'textarea' ? { code: '25CF' } : false } }));
           const h = Math.min(0.35 * lines.length, 1.5);
-          slide.addText(items, { x: 0.7, y: bodyY, w: 12.0, h: h, fontSize: 14, color: TEXT, valign: 'top' });
+          slide.addText(items, { x: isModern ? 0.9 : 0.7, y: bodyY, w: 12.0, h: h, fontSize: 14, color: bodyTextColor, valign: 'top' });
           bodyY += h + 0.1;
         } else {
           bodyY += 0.2;
@@ -1453,15 +1470,15 @@ function exportPPT() {
       const lines = val.split('\n').map(l => l.trim()).filter(Boolean);
       if (lines.length) {
         const items = lines.map(l => ({ text: l, options: { bullet: { code: '25CF' } } }));
-        slide.addText(items, { x: 0.7, y: bodyY, w: 12.0, h: 5.5, fontSize: 16, color: TEXT, valign: 'top' });
+        slide.addText(items, { x: isModern ? 0.9 : 0.7, y: bodyY, w: 12.0, h: 5.5, fontSize: 16, color: bodyTextColor, valign: 'top' });
       }
     } else if (s.table) {
       const rows = s.table.map(f => {
         const val = v[f.id] || '';
         const thLabel = getTitle('th_' + f.id, f.label);
         return [
-          { text: thLabel, options: { bold: true, fill: { color: 'EEF3FB' }, color: DARK, valign: 'middle' } },
-          { text: val || '-', options: { color: TEXT, valign: 'middle' } }
+          { text: thLabel, options: { bold: true, fill: { color: isModern ? 'C2A577' : 'EEF3FB' }, color: isModern ? '2D3138' : DARK, valign: 'middle' } },
+          { text: val || '-', options: { color: isModern ? 'E5E7EB' : TEXT, fill: isModern ? { color: '353A42' } : undefined, valign: 'middle' } }
         ];
       });
       slide.addTable(rows, {
