@@ -403,101 +403,152 @@
     padding-top: 16px;
   }
 
-  /* ===== 테마: 모던 ===== */
+  /* ===== 테마: 모던 (다크 네이비 + 머스타드 베이지) ===== */
   .doc.theme-modern {
     font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
-    color: #1a1a1a;
+    color: #1f2937;
     padding: 0;
     overflow: hidden;
+    background: #fff;
   }
-  .doc.theme-modern .doc-logo { padding: 28px 60px 0; margin-bottom: 0; }
+  .doc.theme-modern .doc-logo {
+    background: #1d2733;
+    padding: 32px 60px 0 100px;
+    margin-bottom: 0;
+    position: relative;
+  }
+  .doc.theme-modern .doc-logo::before,
+  .doc.theme-modern .doc-header::before,
+  .doc.theme-modern .doc-footer::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 60px;
+    background: #c2a577;
+  }
+  .doc.theme-modern .doc-logo img { filter: brightness(0) invert(1); }
   .doc.theme-modern .doc-header {
-    background: linear-gradient(135deg, #1a3a78 0%, #4361b5 60%, #5b8def 100%);
+    background: #1d2733;
     color: #fff;
-    padding: 50px 60px 60px;
-    margin: 0 0 36px;
+    padding: 60px 60px 70px 100px;
+    margin: 0 0 0;
     border: none;
     text-align: left;
     position: relative;
   }
-  .doc.theme-modern .doc-header::after {
-    content: '';
-    position: absolute;
-    left: 60px; bottom: 30px;
-    width: 60px; height: 4px;
-    background: #ffd166;
-  }
   .doc.theme-modern .doc-type {
-    color: #ffd166;
-    letter-spacing: 6px;
-    font-size: 12px;
-    margin-bottom: 14px;
+    color: #c2a577;
+    letter-spacing: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 18px;
+    text-transform: uppercase;
   }
   .doc.theme-modern .doc-title {
     color: #fff;
-    font-size: 38px;
+    font-size: 44px;
     font-weight: 800;
-    line-height: 1.25;
-    margin-bottom: 24px;
+    line-height: 1.1;
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
   }
   .doc.theme-modern .doc-meta {
+    margin-top: 28px;
     justify-content: flex-start;
-    gap: 24px;
-    color: #d6e4ff;
-    font-size: 13px;
+    gap: 28px;
+    color: #c2a577;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
   }
-  .doc.theme-modern .doc-meta strong { color: #ffd166; }
+  .doc.theme-modern .doc-meta strong {
+    color: rgba(255,255,255,0.6);
+    font-weight: 500;
+    margin-right: 6px;
+  }
+  .doc.theme-modern .doc-meta strong + span,
+  .doc.theme-modern .doc-meta > span > span:not([class*="ed-"]):last-child { color: #fff; font-weight: 600; }
+
   .doc.theme-modern h2 {
     font-size: 22px;
-    color: #1a3a78;
+    color: #1d2733;
     border: none;
-    padding: 0 60px;
-    margin: 36px 0 16px;
+    padding: 0 60px 0 100px;
+    margin: 48px 0 18px;
     display: flex;
     align-items: center;
     gap: 14px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
   }
   .doc.theme-modern h2 .num {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 38px; height: 38px;
-    background: #1a3a78;
-    color: #fff;
-    border-radius: 50%;
-    font-size: 16px;
+    background: #c2a577;
+    color: #1d2733;
+    padding: 4px 10px;
+    font-size: 13px;
     font-weight: 700;
-    margin-right: 0;
+    letter-spacing: 0.5px;
+    border-radius: 0;
+    margin-right: 4px;
   }
   .doc.theme-modern .sub-h {
-    padding: 0 60px;
-    color: #4361b5;
-    font-size: 15px;
-    border-left: 3px solid #ffd166;
-    margin-left: 60px;
-    padding-left: 12px;
+    padding: 0 60px 0 100px;
+    color: #1d2733;
+    font-size: 14px;
+    margin: 22px 0 8px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .doc.theme-modern .sub-h::before {
+    content: '';
+    display: inline-block;
+    width: 24px; height: 2px;
+    background: #c2a577;
   }
   .doc.theme-modern p,
-  .doc.theme-modern ul,
-  .doc.theme-modern table { margin-left: 60px; margin-right: 60px; width: auto; }
-  .doc.theme-modern table { width: calc(100% - 120px); }
-  .doc.theme-modern th {
-    background: #f0f4fb;
-    color: #1a3a78;
-    border-color: #d8e0ee;
+  .doc.theme-modern ul {
+    margin-left: 100px;
+    margin-right: 60px;
+    color: #2c3540;
   }
-  .doc.theme-modern td { border-color: #e6ebf3; }
-  .doc.theme-modern tr:nth-child(even) td { background: #fafbfd; }
-  .doc.theme-modern .doc-footer {
-    margin: 60px 60px 0;
-    background: #1a3a78;
-    color: #d6e4ff;
-    padding: 16px 24px;
+  .doc.theme-modern ul li::marker { color: #c2a577; }
+  .doc.theme-modern table {
+    margin-left: 100px;
+    margin-right: 60px;
+    width: calc(100% - 160px);
     border: none;
-    border-radius: 4px;
+  }
+  .doc.theme-modern th {
+    background: #1d2733;
+    color: #fff;
+    border: none;
+    font-weight: 600;
+    padding: 10px 14px;
+    letter-spacing: 0.3px;
+  }
+  .doc.theme-modern td {
+    border: none;
+    border-bottom: 1px solid #ece6da;
+    background: #faf7f1;
+    padding: 10px 14px;
+    color: #2c3540;
+  }
+  .doc.theme-modern tr:nth-child(even) td { background: #f3eddd; }
+  .doc.theme-modern .doc-footer {
+    margin: 64px 0 0;
+    background: #1d2733;
+    color: #c2a577;
+    padding: 18px 60px 18px 100px;
+    border: none;
     font-size: 11px;
-    letter-spacing: 1px;
+    letter-spacing: 2px;
     text-transform: uppercase;
+    text-align: left;
+    position: relative;
   }
 
   /* ===== 테마: 미니멀 ===== */
@@ -1225,7 +1276,7 @@ function exportJSON() {
 // 테마별 색상 팔레트
 const THEMES = {
   classic: { primary: '2C5AA0', dark: '1E3F73', accent: '2C5AA0', tableHead: 'EEF3FB' },
-  modern:  { primary: '1A3A78', dark: '0F2350', accent: 'FFD166', tableHead: 'F0F4FB' },
+  modern:  { primary: '1D2733', dark: '1D2733', accent: 'C2A577', tableHead: '1D2733' },
   minimal: { primary: '1A1A1A', dark: '000000', accent: '888888', tableHead: 'FFFFFF' }
 };
 function currentTheme() { return localStorage.getItem(THEME_KEY) || 'classic'; }
@@ -1251,14 +1302,17 @@ function exportWord() {
       .doc-meta { text-align: center; }
     `,
     modern: `
-      h1 { font-size: 28pt; text-align: left; margin: 0 0 14pt; color: #fff; }
-      h2 { font-size: 18pt; color: #${c.dark}; border: none; padding: 0; margin: 22pt 0 10pt; }
-      h2 .num { background: #${c.dark}; color: #fff; padding: 2pt 9pt; border-radius: 50%; margin-right: 8pt; font-size: 14pt; }
-      .doc-type { color: #${c.accent}; letter-spacing: 6pt; font-weight: bold; margin-bottom: 8pt; }
-      .doc-header { background: #${c.dark}; color: #fff; padding: 30pt; margin: -10pt -10pt 20pt; text-align: left; border: none; }
-      .doc-meta { text-align: left; color: #d6e4ff; }
-      .doc-meta strong { color: #${c.accent}; }
-      .sub-h { color: #${c.dark}; border-left: 3pt solid #${c.accent}; padding-left: 8pt; }
+      h1 { font-size: 32pt; text-align: left; margin: 0 0 10pt; color: #fff; font-weight: 800; letter-spacing: -0.5pt; }
+      h2 { font-size: 18pt; color: #1D2733; border: none; padding: 0; margin: 28pt 0 10pt; font-weight: 700; }
+      h2 .num { background: #C2A577; color: #1D2733; padding: 2pt 8pt; margin-right: 8pt; font-size: 12pt; font-weight: 700; }
+      .doc-type { color: #C2A577; letter-spacing: 5pt; font-weight: 600; margin-bottom: 10pt; text-transform: uppercase; font-size: 9pt; }
+      .doc-header { background: #1D2733; color: #fff; padding: 30pt 30pt 36pt; margin: -10pt -10pt 24pt; text-align: left; border: none; }
+      .doc-meta { text-align: left; color: #C2A577; margin-top: 14pt; letter-spacing: 1pt; }
+      .doc-meta strong { color: rgba(255,255,255,0.6); margin-right: 4pt; }
+      .sub-h { color: #1D2733; padding-left: 0; font-weight: 700; text-transform: uppercase; font-size: 11pt; letter-spacing: 0.5pt; margin: 16pt 0 6pt; }
+      th { background: #1D2733 !important; color: #fff !important; border: none !important; }
+      td { background: #FAF7F1 !important; border: none !important; border-bottom: 0.5pt solid #ECE6DA !important; }
+      .doc-footer { background: #1D2733; color: #C2A577; padding: 12pt 24pt; border: none !important; text-align: left; letter-spacing: 2pt; text-transform: uppercase; }
     `,
     minimal: `
       h1 { font-size: 26pt; text-align: left; margin: 0 0 10pt; font-weight: 300; }
@@ -1327,22 +1381,42 @@ function exportPPT() {
   const TEXT = '222222';
   const MUTED = '666666';
 
+  const themeName = currentTheme();
   // 표지 슬라이드
   const cover = pptx.addSlide();
-  cover.background = { color: 'FFFFFF' };
   const logo = getLogo();
-  if (logo) {
-    // 로고는 표지 상단 중앙에 배치
-    cover.addImage({ data: logo, x: 5.66, y: 0.6, w: 2.0, h: 1.0, sizing: { type: 'contain', w: 2.0, h: 1.0 } });
-  }
-  cover.addText(docType, { x: 0.5, y: 2.0, w: 12.33, h: 0.5, align: 'center', fontSize: 18, color: PRIMARY, bold: true, charSpacing: 8 });
-  cover.addText(title, { x: 0.5, y: 2.7, w: 12.33, h: 1.6, align: 'center', fontSize: 40, color: TEXT, bold: true });
   const metaParts = [];
   if (v.author) metaParts.push(`작성자: ${v.author}`);
   if (v.org) metaParts.push(`소속: ${v.org}`);
   if (v.date) metaParts.push(`작성일: ${formatDate(v.date)}`);
-  if (metaParts.length) {
-    cover.addText(metaParts.join('   ·   '), { x: 0.5, y: 5.0, w: 12.33, h: 0.5, align: 'center', fontSize: 16, color: MUTED });
+
+  if (themeName === 'modern') {
+    // 다크 네이비 + 베이지 좌측 스트립
+    cover.background = { color: '1D2733' };
+    cover.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: 0.8, h: 7.5, fill: { color: 'C2A577' } });
+    if (logo) cover.addImage({ data: logo, x: 1.2, y: 0.5, w: 2.0, h: 1.0, sizing: { type: 'contain', w: 2.0, h: 1.0 } });
+    cover.addText(docType, { x: 1.2, y: 2.0, w: 11.5, h: 0.4, align: 'left', fontSize: 14, color: 'C2A577', bold: true, charSpacing: 8 });
+    cover.addText(title, { x: 1.2, y: 2.5, w: 11.5, h: 2.0, align: 'left', fontSize: 48, color: 'FFFFFF', bold: true });
+    if (metaParts.length) {
+      cover.addText(metaParts.join('   ·   '), { x: 1.2, y: 5.2, w: 11.5, h: 0.5, align: 'left', fontSize: 13, color: 'C2A577', charSpacing: 2 });
+    }
+  } else if (themeName === 'minimal') {
+    cover.background = { color: 'FFFFFF' };
+    if (logo) cover.addImage({ data: logo, x: 0.8, y: 0.7, w: 2.0, h: 1.0, sizing: { type: 'contain', w: 2.0, h: 1.0 } });
+    cover.addText(docType, { x: 0.8, y: 2.4, w: 11.5, h: 0.4, align: 'left', fontSize: 13, color: '888888', charSpacing: 6 });
+    cover.addText(title, { x: 0.8, y: 2.9, w: 11.5, h: 1.8, align: 'left', fontSize: 38, color: '1A1A1A' });
+    cover.addShape(pptx.ShapeType.line, { x: 0.8, y: 4.9, w: 1.5, h: 0, line: { color: '1A1A1A', width: 1.5 } });
+    if (metaParts.length) {
+      cover.addText(metaParts.join('   ·   '), { x: 0.8, y: 5.2, w: 11.5, h: 0.5, align: 'left', fontSize: 13, color: '777777' });
+    }
+  } else {
+    cover.background = { color: 'FFFFFF' };
+    if (logo) cover.addImage({ data: logo, x: 5.66, y: 0.6, w: 2.0, h: 1.0, sizing: { type: 'contain', w: 2.0, h: 1.0 } });
+    cover.addText(docType, { x: 0.5, y: 2.0, w: 12.33, h: 0.5, align: 'center', fontSize: 18, color: PRIMARY, bold: true, charSpacing: 8 });
+    cover.addText(title, { x: 0.5, y: 2.7, w: 12.33, h: 1.6, align: 'center', fontSize: 40, color: TEXT, bold: true });
+    if (metaParts.length) {
+      cover.addText(metaParts.join('   ·   '), { x: 0.5, y: 5.0, w: 12.33, h: 0.5, align: 'center', fontSize: 16, color: MUTED });
+    }
   }
 
   // 섹션별 슬라이드
