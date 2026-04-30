@@ -266,6 +266,38 @@
     margin: 16px 0 6px;
     font-weight: 600;
   }
+  /* 미리보기 인라인 편집 스타일 */
+  .doc [contenteditable="true"] {
+    outline: none;
+    border-radius: 3px;
+    transition: background-color 0.15s;
+    min-height: 1em;
+  }
+  .doc [contenteditable="true"]:hover {
+    background: #f4f7fc;
+  }
+  .doc [contenteditable="true"]:focus {
+    background: #fff8d8;
+    box-shadow: 0 0 0 2px rgba(44, 90, 160, 0.25);
+  }
+  .doc .ed-empty.ed-text::before,
+  .doc .ed-list.ed-empty li:empty::before {
+    content: '클릭하여 입력...';
+    color: #c8c8c8;
+    font-style: italic;
+  }
+  .doc .doc-title.ed-empty::before { content: '제목을 입력하세요'; }
+  .doc .ed-list { list-style: disc; }
+
+  /* 인쇄 시 편집 강조 제거 */
+  @media print {
+    .doc [contenteditable="true"]:hover,
+    .doc [contenteditable="true"]:focus {
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+    .doc .ed-empty::before { content: '' !important; }
+  }
   .doc p { margin: 0 0 12px; white-space: pre-wrap; }
   .doc ul { margin: 0 0 12px; padding-left: 22px; }
   .doc ul li { margin-bottom: 4px; }
@@ -554,10 +586,10 @@ function fieldHTML(f, docType) {
   const onIn = ` oninput="onInput('${f.id}', this.value)"`;
   if (f.type === 'textarea') {
     return `<label>${escapeHTML(label)}</label>
-      <textarea${onIn}${ph}>${escapeHTML(v)}</textarea>`;
+      <textarea id="form-${f.id}"${onIn}${ph}>${escapeHTML(v)}</textarea>`;
   }
   return `<label>${escapeHTML(label)}</label>
-    <input${onIn}${ph} value="${escapeHTML(v)}" />`;
+    <input id="form-${f.id}"${onIn}${ph} value="${escapeHTML(v)}" />`;
 }
 
 function sectionCardHTML(s, docType) {
@@ -600,6 +632,20 @@ function renderForm() {
     .join('');
 }
 
+// 편집 가능한 리스트/단문 HTML 생성 (data-list / data-bind 부착)
+function editableListHTML(id, val) {
+  if (val) {
+    const items = val.split('\n').map(l => l.trim()).filter(Boolean);
+    return `<ul data-list="${id}" contenteditable="true" class="ed-list">${items.map(l => `<li>${escapeHTML(l)}</li>`).join('')}</ul>`;
+  }
+  return `<ul data-list="${id}" contenteditable="true" class="ed-list ed-empty"><li></li></ul>`;
+}
+function editableTextHTML(id, val, tag = 'p') {
+  const safe = escapeHTML(val);
+  const cls = val ? 'ed-text' : 'ed-text ed-empty';
+  return `<${tag} data-bind="${id}" contenteditable="true" class="${cls}">${safe}</${tag}>`;
+}
+
 // ----- 문서 미리보기 -----
 function sectionDocHTML(s, num, docType) {
   const v = state.values;
@@ -610,19 +656,18 @@ function sectionDocHTML(s, num, docType) {
       const sub = pickTitle(c.label, docType);
       const val = v[c.id] || '';
       const body = c.type === 'textarea'
-        ? (val ? listFromText(val) : `<p class="empty">-</p>`)
-        : (val ? `<p>${escapeHTML(val)}</p>` : `<p class="empty">-</p>`);
+        ? editableListHTML(c.id, val)
+        : editableTextHTML(c.id, val);
       return `<h3 class="sub-h">${num}-${i+1}) ${escapeHTML(sub)}</h3>${body}`;
     }).join('');
   } else if (s.single) {
-    const val = v[s.single.id] || '';
-    inner = val ? listFromText(val) : `<p class="empty">-</p>`;
+    inner = editableListHTML(s.single.id, v[s.single.id] || '');
   } else if (s.table) {
     const rows = s.table.map(f => {
       const val = v[f.id] || '';
       const cell = f.type === 'textarea'
-        ? (val ? listFromText(val) : `<span class="empty">-</span>`)
-        : (escapeHTML(val) || `<span class="empty">-</span>`);
+        ? editableListHTML(f.id, val)
+        : `<span data-bind="${f.id}" contenteditable="true" class="${val ? 'ed-text' : 'ed-text ed-empty'}">${escapeHTML(val)}</span>`;
       return `<tr><th>${escapeHTML(f.label)}</th><td>${cell}</td></tr>`;
     }).join('');
     inner = `<table>${rows}</table>`;
@@ -637,10 +682,10 @@ function renderDoc() {
   let html = `
     <div class="doc-header">
       <div class="doc-type">${escapeHTML(docType)}</div>
-      <h1 class="doc-title">${escapeHTML(v.title) || '<span class="empty">제목을 입력하세요</span>'}</h1>
+      <h1 class="doc-title ${v.title ? '' : 'ed-empty'}" data-bind="title" contenteditable="true">${escapeHTML(v.title || '')}</h1>
       <div class="doc-meta">
-        ${v.author ? `<span><strong>작성자</strong>${escapeHTML(v.author)}</span>` : ''}
-        ${v.org ? `<span><strong>소속</strong>${escapeHTML(v.org)}</span>` : ''}
+        <span><strong>작성자</strong><span class="${v.author ? '' : 'ed-empty'}" data-bind="author" contenteditable="true">${escapeHTML(v.author || '')}</span></span>
+        <span><strong>소속</strong><span class="${v.org ? '' : 'ed-empty'}" data-bind="org" contenteditable="true">${escapeHTML(v.org || '')}</span></span>
         ${v.date ? `<span><strong>작성일</strong>${formatDate(v.date)}</span>` : ''}
       </div>
     </div>
@@ -660,6 +705,41 @@ function renderDoc() {
 }
 
 function render() { renderForm(); renderDoc(); }
+
+// 미리보기 인라인 편집 → state 동기화 (폼 input도 함께 갱신, 단 doc은 재렌더하지 않음)
+function bindDocEditing() {
+  const doc = $('doc');
+  if (!doc || doc._editBound) return;
+  doc._editBound = true;
+  doc.addEventListener('input', (e) => {
+    const target = e.target.closest('[data-bind], [data-list]');
+    if (!target) return;
+    const bindId = target.dataset.bind;
+    const listId = target.dataset.list;
+    let id, val;
+    if (bindId) {
+      id = bindId;
+      val = target.innerText.replace(/ /g, ' ').trim();
+    } else {
+      id = listId;
+      const items = [...target.querySelectorAll('li')]
+        .map(li => li.innerText.replace(/ /g, ' ').trim())
+        .filter(Boolean);
+      val = items.join('\n');
+    }
+    state.values[id] = val;
+    target.classList.toggle('ed-empty', !val);
+    saveState();
+    // 왼쪽 폼 input도 함께 갱신 (폼 재렌더 X)
+    const formEl = document.getElementById(`form-${id}`);
+    if (formEl && formEl.value !== val) formEl.value = val;
+  });
+  // 빈 칸을 클릭해 입력 시작할 수 있도록 placeholder 제거
+  doc.addEventListener('focusin', (e) => {
+    const t = e.target.closest('.ed-empty');
+    if (t) t.classList.remove('ed-empty');
+  });
+}
 
 // 헤더 인풋 -> state 동기화
 function bindHeader() {
@@ -892,6 +972,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const savedModel = localStorage.getItem(AI_MODEL_STORAGE);
   if (savedKey) $('aiApiKey').value = savedKey;
   if (savedModel) $('aiModel').value = savedModel;
+  bindDocEditing();
   saveAndRender();
 });
 </script>
