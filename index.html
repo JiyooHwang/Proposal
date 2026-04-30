@@ -112,6 +112,75 @@
 
   .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
+  /* Section toggle cards */
+  .section-card {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .section-card.disabled { opacity: 0.55; }
+  .section-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background: #f3f6fb;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+  }
+  .section-card.disabled .section-card-head { background: #f7f7f9; border-bottom: none; }
+  .section-card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--primary-dark);
+  }
+  .section-card-actions { display: flex; gap: 6px; align-items: center; }
+  .mini-btn {
+    background: #fff;
+    color: var(--primary);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  .mini-btn:hover { background: #eef3fb; }
+  .mini-btn.danger { color: #b3261e; }
+  .mini-btn.danger:hover { background: #fdecea; }
+  .section-card-body { padding: 12px; }
+  .section-card.collapsed .section-card-body { display: none; }
+  .subsection-label {
+    font-size: 12px;
+    color: var(--primary);
+    font-weight: 600;
+    margin: 6px 0 4px;
+  }
+  .excluded-host {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 12px;
+  }
+  .excluded-host:empty::after {
+    content: '제외된 항목이 없습니다';
+    color: var(--muted);
+    font-size: 12px;
+    font-style: italic;
+  }
+  .chip-add {
+    background: #fff;
+    border: 1px dashed var(--primary);
+    color: var(--primary);
+    padding: 4px 10px;
+    border-radius: 14px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .chip-add:hover { background: #eef3fb; }
+
   /* Document preview */
   .doc {
     max-width: 800px;
@@ -158,6 +227,12 @@
     border-left: 4px solid var(--primary);
     padding-left: 10px;
     margin: 28px 0 14px;
+  }
+  .doc .sub-h {
+    font-size: 14px;
+    color: #333;
+    margin: 16px 0 6px;
+    font-weight: 600;
   }
   .doc p { margin: 0 0 12px; white-space: pre-wrap; }
   .doc ul { margin: 0 0 12px; padding-left: 22px; }
@@ -233,9 +308,9 @@
     <div class="field-group">
       <h3>문서 기본 정보</h3>
       <label>문서 종류</label>
-      <select id="docType" onchange="render()">
-        <option value="기획서">기획서</option>
+      <select id="docType">
         <option value="제안서">제안서</option>
+        <option value="기획서">기획서</option>
         <option value="사업계획서">사업계획서</option>
         <option value="프로젝트 계획서">프로젝트 계획서</option>
       </select>
@@ -256,48 +331,11 @@
     </div>
 
     <div class="field-group">
-      <h3>개요</h3>
-      <label>배경 (왜 이 프로젝트가 필요한가?)</label>
-      <textarea id="background" placeholder="시장 환경, 문제 상황, 필요성 등" oninput="render()"></textarea>
-      <label>목적 (무엇을 달성하려 하는가?)</label>
-      <textarea id="purpose" placeholder="이 프로젝트의 핵심 목적" oninput="render()"></textarea>
+      <h3>제외된 항목 (클릭하여 추가)</h3>
+      <div id="excludedHost" class="excluded-host"></div>
     </div>
 
-    <div class="field-group">
-      <h3>목표 및 주요 내용</h3>
-      <label>주요 목표 (한 줄에 하나씩)</label>
-      <textarea id="goals" placeholder="예:&#10;사용자 10만 명 확보&#10;매출 30% 증대" oninput="render()"></textarea>
-      <label>주요 추진 내용 (한 줄에 하나씩)</label>
-      <textarea id="content" placeholder="예:&#10;시장 분석 및 사용자 조사&#10;프로토타입 개발&#10;파일럿 운영" oninput="render()"></textarea>
-    </div>
-
-    <div class="field-group">
-      <h3>일정 및 예산</h3>
-      <div class="row">
-        <div>
-          <label>시작일</label>
-          <input id="startDate" type="date" oninput="render()" />
-        </div>
-        <div>
-          <label>종료일</label>
-          <input id="endDate" type="date" oninput="render()" />
-        </div>
-      </div>
-      <label>주요 일정 (단계: 기간 형식, 한 줄에 하나)</label>
-      <textarea id="schedule" placeholder="예:&#10;1단계 기획: 2026.05 ~ 2026.06&#10;2단계 개발: 2026.07 ~ 2026.09" oninput="render()"></textarea>
-      <label>예산 (총액)</label>
-      <input id="budget" placeholder="예: 50,000,000 원" oninput="render()" />
-      <label>예산 세부 내역 (항목: 금액, 한 줄에 하나)</label>
-      <textarea id="budgetDetail" placeholder="예:&#10;인건비: 30,000,000원&#10;장비/시스템: 15,000,000원" oninput="render()"></textarea>
-    </div>
-
-    <div class="field-group">
-      <h3>기대효과 및 결론</h3>
-      <label>기대효과 (한 줄에 하나씩)</label>
-      <textarea id="effects" placeholder="예:&#10;브랜드 인지도 향상&#10;신규 매출원 확보" oninput="render()"></textarea>
-      <label>결론 / 요청사항</label>
-      <textarea id="conclusion" placeholder="결재/검토 요청 등" oninput="render()"></textarea>
-    </div>
+    <div id="sectionsHost"></div>
   </div>
 
   <!-- Preview -->
@@ -308,20 +346,95 @@
 
 <script>
 const $ = (id) => document.getElementById(id);
-const STORAGE_KEY = 'proposal-tool-data-v1';
+const STORAGE_KEY = 'proposal-tool-data-v2';
 
-const fields = ['docType','title','author','org','date','background','purpose',
-  'goals','content','startDate','endDate','schedule','budget','budgetDetail',
-  'effects','conclusion'];
+// 헤더 기본 정보 필드
+const HEADER_FIELDS = ['docType','title','author','org','date'];
+
+// 섹션 스키마: 각 섹션은 enabled 토글 가능, children = 하위 항목, fields = 표 입력
+// title이 객체면 docType별 라벨 분기 ({ 제안서: '...', 기획서: '...', default: '...' })
+const SCHEMA = [
+  {
+    id: 'overview',
+    title: { 제안서: '제안 개요', 기획서: '기획 개요', default: '제안 개요' },
+    children: [
+      { id: 'ov_purpose',  label: { 제안서: '제안 목적', 기획서: '기획 목적', default: '제안 목적' }, type: 'textarea' },
+      { id: 'ov_features', label: '제안(기획)의 특징 및 장점', type: 'textarea' },
+      { id: 'ov_effects',  label: '기대 효과', type: 'textarea' }
+    ]
+  },
+  { id: 'mainContent', title: '주요 내용', single: { id: 'mainContent_text', type: 'textarea', placeholder: '주요 내용을 한 줄에 하나씩 입력' } },
+  {
+    id: 'budget', title: '소요 예산',
+    children: [
+      { id: 'bg_total',  label: '총 예산', type: 'input', placeholder: '예: 50,000,000원' },
+      { id: 'bg_detail', label: '세부 내역 (한 줄에 하나)', type: 'textarea', placeholder: '인건비: 30,000,000원\n장비: 15,000,000원' }
+    ]
+  },
+  {
+    id: 'company',
+    title: { 제안서: '자사 현황', 기획서: '업체 현황', default: '자사 현황' },
+    table: [
+      { id: 'co_name',     label: '회사명' },
+      { id: 'co_ceo',      label: '대표자' },
+      { id: 'co_business', label: '사업분야' },
+      { id: 'co_address',  label: '주소' },
+      { id: 'co_phone',    label: '전화번호' },
+      { id: 'co_founded',  label: '회사 설립 연도' },
+      { id: 'co_career',   label: '해당부문 종사 기간' },
+      { id: 'co_history',  label: '주요 연혁', type: 'textarea', placeholder: '연도/사건 형식으로 한 줄에 하나' }
+    ]
+  },
+  {
+    id: 'execution', title: '수행 계획 및 능력',
+    children: [
+      { id: 'ex_plan',       label: '수행 계획', type: 'textarea' },
+      { id: 'ex_detail',     label: '세부 수행 계획', type: 'textarea' },
+      { id: 'ex_experience', label: '과거 수행 경험', type: 'textarea' }
+    ]
+  },
+  {
+    id: 'management', title: '사업 관리',
+    children: [
+      { id: 'mg_org',      label: '사업 수행 조직', type: 'textarea' },
+      { id: 'mg_manpower', label: '투입 인력 계획', type: 'textarea' },
+      { id: 'mg_schedule', label: '추진 일정 계획', type: 'textarea', placeholder: '1단계 기획: 2026.05~2026.06' }
+    ]
+  },
+  { id: 'etc', title: '기타', single: { id: 'etc_text', type: 'textarea' } }
+];
+
+// 모든 입력 id 수집
+function allInputIds() {
+  const ids = [...HEADER_FIELDS];
+  SCHEMA.forEach(s => {
+    if (s.children) s.children.forEach(c => ids.push(c.id));
+    if (s.single) ids.push(s.single.id);
+    if (s.table) s.table.forEach(f => ids.push(f.id));
+  });
+  return ids;
+}
+
+// 상태: 입력값 + 섹션 enabled 여부
+const state = {
+  values: {},
+  enabled: Object.fromEntries(SCHEMA.map(s => [s.id, s.id !== 'etc']))
+};
+
+function pickTitle(t, docType) {
+  if (typeof t === 'string') return t;
+  return t[docType] || t.default || '';
+}
 
 function getData() {
-  const data = {};
-  fields.forEach(f => data[f] = $(f).value);
-  return data;
+  return { values: { ...state.values }, enabled: { ...state.enabled } };
 }
 
 function setData(data) {
-  fields.forEach(f => { if (data[f] !== undefined) $(f).value = data[f]; });
+  if (!data) return;
+  // v1 데이터 호환은 생략 (구조가 완전히 다름)
+  if (data.values) state.values = { ...data.values };
+  if (data.enabled) state.enabled = { ...state.enabled, ...data.enabled };
 }
 
 function formatDate(iso) {
@@ -347,86 +460,189 @@ function emptyOr(html, placeholder) {
   return html || `<p class="empty">${placeholder}</p>`;
 }
 
-function render() {
-  const d = getData();
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+// 입력값 갱신
+function onInput(id, val) {
+  state.values[id] = val;
+  saveAndRender();
+}
 
-  const period = (d.startDate || d.endDate)
-    ? `${formatDate(d.startDate) || '미정'} ~ ${formatDate(d.endDate) || '미정'}`
-    : '';
+function toggleSection(id, on) {
+  state.enabled[id] = on;
+  saveAndRender();
+}
+
+function saveAndRender() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(getData()));
+  renderForm();
+  renderDoc();
+}
+
+// ----- 폼 패널 -----
+function fieldHTML(f, docType) {
+  const v = state.values[f.id] || '';
+  const label = pickTitle(f.label, docType);
+  const ph = f.placeholder ? ` placeholder="${escapeHTML(f.placeholder)}"` : '';
+  const onIn = ` oninput="onInput('${f.id}', this.value)"`;
+  if (f.type === 'textarea') {
+    return `<label>${escapeHTML(label)}</label>
+      <textarea${onIn}${ph}>${escapeHTML(v)}</textarea>`;
+  }
+  return `<label>${escapeHTML(label)}</label>
+    <input${onIn}${ph} value="${escapeHTML(v)}" />`;
+}
+
+function sectionCardHTML(s, docType) {
+  const enabled = state.enabled[s.id];
+  const title = pickTitle(s.title, docType);
+  let body = '';
+  if (s.children) {
+    body = s.children.map(c => fieldHTML(c, docType)).join('');
+  } else if (s.single) {
+    body = fieldHTML({ ...s.single, label: '내용' }, docType);
+  } else if (s.table) {
+    body = s.table.map(f => fieldHTML(f, docType)).join('');
+  }
+  return `
+    <div class="section-card ${enabled ? '' : 'disabled collapsed'}">
+      <div class="section-card-head">
+        <span class="section-card-title">${escapeHTML(title)}</span>
+        <div class="section-card-actions">
+          ${enabled
+            ? `<button class="mini-btn danger" onclick="toggleSection('${s.id}', false)">제외</button>`
+            : `<button class="mini-btn" onclick="toggleSection('${s.id}', true)">추가</button>`}
+        </div>
+      </div>
+      ${enabled ? `<div class="section-card-body">${body}</div>` : ''}
+    </div>
+  `;
+}
+
+function renderForm() {
+  const docType = state.values.docType || '제안서';
+  // 활성화된 섹션 카드
+  $('sectionsHost').innerHTML = SCHEMA
+    .filter(s => state.enabled[s.id])
+    .map(s => sectionCardHTML(s, docType))
+    .join('');
+  // 제외된 섹션 칩
+  $('excludedHost').innerHTML = SCHEMA
+    .filter(s => !state.enabled[s.id])
+    .map(s => `<button class="chip-add" onclick="toggleSection('${s.id}', true)">+ ${escapeHTML(pickTitle(s.title, docType))}</button>`)
+    .join('');
+}
+
+// ----- 문서 미리보기 -----
+function sectionDocHTML(s, num, docType) {
+  const v = state.values;
+  const title = pickTitle(s.title, docType);
+  let inner = '';
+  if (s.children) {
+    inner = s.children.map((c, i) => {
+      const sub = pickTitle(c.label, docType);
+      const val = v[c.id] || '';
+      const body = c.type === 'textarea'
+        ? (val ? listFromText(val) : `<p class="empty">-</p>`)
+        : (val ? `<p>${escapeHTML(val)}</p>` : `<p class="empty">-</p>`);
+      return `<h3 class="sub-h">${num}-${i+1}) ${escapeHTML(sub)}</h3>${body}`;
+    }).join('');
+  } else if (s.single) {
+    const val = v[s.single.id] || '';
+    inner = val ? listFromText(val) : `<p class="empty">-</p>`;
+  } else if (s.table) {
+    const rows = s.table.map(f => {
+      const val = v[f.id] || '';
+      const cell = f.type === 'textarea'
+        ? (val ? listFromText(val) : `<span class="empty">-</span>`)
+        : (escapeHTML(val) || `<span class="empty">-</span>`);
+      return `<tr><th>${escapeHTML(f.label)}</th><td>${cell}</td></tr>`;
+    }).join('');
+    inner = `<table>${rows}</table>`;
+  }
+  return `<h2>${num}. ${escapeHTML(title)}</h2>${inner}`;
+}
+
+function renderDoc() {
+  const v = state.values;
+  const docType = v.docType || '제안서';
 
   let html = `
     <div class="doc-header">
-      <div class="doc-type">${escapeHTML(d.docType || '기획서')}</div>
-      <h1 class="doc-title">${escapeHTML(d.title) || '<span class="empty">제목을 입력하세요</span>'}</h1>
+      <div class="doc-type">${escapeHTML(docType)}</div>
+      <h1 class="doc-title">${escapeHTML(v.title) || '<span class="empty">제목을 입력하세요</span>'}</h1>
       <div class="doc-meta">
-        ${d.author ? `<span><strong>작성자</strong>${escapeHTML(d.author)}</span>` : ''}
-        ${d.org ? `<span><strong>소속</strong>${escapeHTML(d.org)}</span>` : ''}
-        ${d.date ? `<span><strong>작성일</strong>${formatDate(d.date)}</span>` : ''}
+        ${v.author ? `<span><strong>작성자</strong>${escapeHTML(v.author)}</span>` : ''}
+        ${v.org ? `<span><strong>소속</strong>${escapeHTML(v.org)}</span>` : ''}
+        ${v.date ? `<span><strong>작성일</strong>${formatDate(v.date)}</span>` : ''}
       </div>
     </div>
-
-    <h2>1. 개요</h2>
-    <table>
-      <tr><th>배경</th><td>${escapeHTML(d.background) || '<span class="empty">-</span>'}</td></tr>
-      <tr><th>목적</th><td>${escapeHTML(d.purpose) || '<span class="empty">-</span>'}</td></tr>
-      ${period ? `<tr><th>추진 기간</th><td>${period}</td></tr>` : ''}
-    </table>
-
-    <h2>2. 주요 목표</h2>
-    ${emptyOr(listFromText(d.goals), '목표를 입력하세요')}
-
-    <h2>3. 주요 추진 내용</h2>
-    ${emptyOr(listFromText(d.content), '추진 내용을 입력하세요')}
-
-    <h2>4. 추진 일정</h2>
-    ${emptyOr(listFromText(d.schedule), '일정을 입력하세요')}
-
-    <h2>5. 소요 예산</h2>
-    ${d.budget ? `<p><strong>총 예산: </strong>${escapeHTML(d.budget)}</p>` : ''}
-    ${emptyOr(listFromText(d.budgetDetail), '세부 내역을 입력하세요')}
-
-    <h2>6. 기대효과</h2>
-    ${emptyOr(listFromText(d.effects), '기대효과를 입력하세요')}
-
-    <h2>7. 결론 및 요청사항</h2>
-    <p>${escapeHTML(d.conclusion) || '<span class="empty">-</span>'}</p>
-
-    <div class="doc-footer">
-      ${escapeHTML(d.org || '')} ${d.org && d.author ? '·' : ''} ${escapeHTML(d.author || '')}
-    </div>
   `;
+
+  let n = 1;
+  SCHEMA.forEach(s => {
+    if (!state.enabled[s.id]) return;
+    html += sectionDocHTML(s, n++, docType);
+  });
+
+  html += `<div class="doc-footer">
+    ${escapeHTML(v.org || '')} ${v.org && v.author ? '·' : ''} ${escapeHTML(v.author || '')}
+  </div>`;
+
   $('doc').innerHTML = html;
+}
+
+function render() { renderForm(); renderDoc(); }
+
+// 헤더 인풋 -> state 동기화
+function bindHeader() {
+  HEADER_FIELDS.forEach(id => {
+    const el = $(id);
+    if (!el) return;
+    el.value = state.values[id] || '';
+    el.oninput = () => { state.values[id] = el.value; saveAndRender(); };
+    el.onchange = () => { state.values[id] = el.value; saveAndRender(); };
+  });
 }
 
 function resetForm() {
   if (!confirm('모든 입력을 초기화하시겠습니까?')) return;
-  fields.forEach(f => $(f).value = '');
-  $('docType').value = '기획서';
+  state.values = {};
+  state.enabled = Object.fromEntries(SCHEMA.map(s => [s.id, s.id !== 'etc']));
   localStorage.removeItem(STORAGE_KEY);
-  render();
+  bindHeader();
+  saveAndRender();
 }
 
 function loadSample() {
-  setData({
-    docType: '기획서',
-    title: '신규 모바일 앱 \"DailyFit\" 출시 기획',
-    author: '김기획',
-    org: '서비스기획팀',
-    date: '2026-04-29',
-    background: '최근 헬스케어 시장의 모바일 사용자가 연 25% 증가하고 있으며,\n기존 자사 서비스는 웹 중심으로 모바일 사용자 이탈이 발생하고 있음.',
-    purpose: '모바일 사용자 경험을 개선하고 신규 고객층을 확보하여\n시장 점유율을 확대하고자 함.',
-    goals: 'MAU 10만 명 확보\n앱스토어 평점 4.5 이상 유지\n구독 전환율 8% 달성',
-    content: '시장 및 경쟁사 분석\n핵심 기능 정의 및 UX 설계\n앱 개발 및 베타 테스트\n공식 출시 및 마케팅 캠페인',
-    startDate: '2026-05-01',
-    endDate: '2026-12-31',
-    schedule: '1단계 기획/설계: 2026.05 ~ 2026.06\n2단계 개발: 2026.07 ~ 2026.09\n3단계 베타 테스트: 2026.10 ~ 2026.11\n4단계 공식 출시: 2026.12',
-    budget: '120,000,000 원',
-    budgetDetail: '인건비: 70,000,000원\n개발/인프라: 30,000,000원\n마케팅: 15,000,000원\n예비비: 5,000,000원',
-    effects: '신규 모바일 사용자 유입 확대\n브랜드 인지도 및 고객 만족도 향상\n구독 기반의 안정적 매출 구조 확보',
-    conclusion: '본 기획안에 대한 검토 및 승인을 요청드립니다.\n승인 시 5월부터 즉시 추진 예정입니다.'
-  });
-  render();
+  state.values = {
+    docType: '제안서',
+    title: '스마트시티 통합관제 플랫폼 구축 제안',
+    author: '김제안',
+    org: '솔루션사업본부',
+    date: new Date().toISOString().slice(0,10),
+    ov_purpose: '도시 인프라(CCTV, 교통, 환경)를 단일 플랫폼에서 통합 관제하여\n시민 안전과 행정 효율을 동시에 향상시킴.',
+    ov_features: 'AI 기반 이상 이벤트 자동 탐지\n오픈 표준(OGC, FIWARE) 준수로 확장성 확보\n클라우드/온프레미스 하이브리드 구축',
+    ov_effects: '관제 인력 30% 절감\n사고 대응 평균 시간 50% 단축\n시민 민원 처리 만족도 향상',
+    mainContent_text: '통합관제 대시보드 구축\nAI 영상 분석 모듈 도입\n데이터 연계 및 표준화\n관제요원 교육 프로그램 운영',
+    bg_total: '850,000,000원',
+    bg_detail: '인건비: 450,000,000원\nHW/인프라: 220,000,000원\nSW 라이선스: 120,000,000원\n기타 운영비: 60,000,000원',
+    co_name: '(주)스마트솔루션',
+    co_ceo: '홍길동',
+    co_business: '스마트시티 / 통합관제 솔루션 개발',
+    co_address: '서울특별시 강남구 테헤란로 123',
+    co_phone: '02-1234-5678',
+    co_founded: '2012년',
+    co_career: '12년',
+    co_history: '2012 회사 설립\n2016 스마트시티 통합관제 솔루션 출시\n2020 ISO 27001 인증\n2024 매출 200억 돌파',
+    ex_plan: '단계별 PoC → 파일럿 → 본 구축으로 위험 최소화',
+    ex_detail: '1단계: 요구사항 분석 및 설계\n2단계: 모듈별 개발 및 단위 테스트\n3단계: 통합 테스트 및 안정화\n4단계: 운영 이관 및 교육',
+    ex_experience: 'A시 통합관제센터 구축 (2022)\nB광역시 교통관제 고도화 (2023)\nC공공기관 영상관제 AI 도입 (2024)',
+    mg_org: 'PM 1명, 아키텍트 2명, 개발 8명, QA 2명, 운영지원 2명',
+    mg_manpower: '총 15명 / 12개월 / 평균 12 MM',
+    mg_schedule: '1단계 분석/설계: 2026.05~2026.07\n2단계 개발: 2026.08~2026.12\n3단계 통합/테스트: 2027.01~2027.02\n4단계 운영이관: 2027.03~2027.04'
+  };
+  state.enabled = Object.fromEntries(SCHEMA.map(s => [s.id, s.id !== 'etc']));
+  bindHeader();
+  saveAndRender();
 }
 
 function exportJSON() {
@@ -447,7 +663,8 @@ function importJSON(e) {
   reader.onload = (evt) => {
     try {
       setData(JSON.parse(evt.target.result));
-      render();
+      bindHeader();
+      saveAndRender();
     } catch {
       alert('파일을 읽을 수 없습니다.');
     }
@@ -455,14 +672,16 @@ function importJSON(e) {
   reader.readAsText(file);
 }
 
-// Restore saved data on load
+// 시작 시 복원
 window.addEventListener('DOMContentLoaded', () => {
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved) {
     try { setData(JSON.parse(saved)); } catch {}
   }
-  if (!$('date').value) $('date').value = new Date().toISOString().slice(0, 10);
-  render();
+  if (!state.values.date) state.values.date = new Date().toISOString().slice(0, 10);
+  if (!state.values.docType) state.values.docType = '제안서';
+  bindHeader();
+  saveAndRender();
 });
 </script>
 </body>
