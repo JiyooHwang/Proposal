@@ -4,6 +4,9 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>기획서 / 제안서 자동 생성기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,500;1,600&family=Noto+Serif+KR:wght@500&display=swap" rel="stylesheet">
 <style>
   :root {
     --primary: #2c5aa0;
@@ -403,156 +406,177 @@
     padding-top: 16px;
   }
 
-  /* ===== 테마: 모던 (다크 그레이 + 머스타드 베이지) ===== */
+  /* ===== 테마: 모던 (라이트 그레이 + 이탤릭 세리프 + 타임라인) ===== */
   .doc.theme-modern {
     font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
-    color: #e5e7eb;
+    background: #efefef;
+    color: #2a2a2a;
     padding: 0;
-    overflow: hidden;
-    background: #2d3138;
-    position: relative;
   }
-  .doc.theme-modern::before {
-    content: '';
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 60px;
-    background: #c2a577;
-    z-index: 0;
-  }
-  .doc.theme-modern > * { position: relative; z-index: 1; }
   .doc.theme-modern .doc-logo {
-    padding: 32px 60px 0 100px;
+    padding: 50px 80px 0;
     margin-bottom: 0;
+    background: transparent;
   }
-  .doc.theme-modern .doc-logo img { filter: brightness(0) invert(1); }
+  .doc.theme-modern .doc-logo img { filter: none; }
   .doc.theme-modern .doc-header {
     background: transparent;
-    color: #fff;
-    padding: 40px 60px 60px 100px;
+    color: #1a1a1a;
+    padding: 50px 80px 30px;
     margin: 0;
     border: none;
-    text-align: left;
+    text-align: center;
   }
   .doc.theme-modern .doc-type {
-    color: #c2a577;
-    letter-spacing: 5px;
+    color: #777;
+    letter-spacing: 4px;
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 500;
     margin-bottom: 18px;
     text-transform: uppercase;
   }
   .doc.theme-modern .doc-title {
-    color: #fff;
-    font-size: 44px;
-    font-weight: 800;
-    line-height: 1.1;
-    margin-bottom: 12px;
-    letter-spacing: -0.5px;
+    font-family: 'Playfair Display', 'Noto Serif KR', 'Times New Roman', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 38px;
+    line-height: 1.35;
+    color: #1a1a1a;
+    letter-spacing: 0.3px;
+    margin-bottom: 14px;
+    max-width: 80%;
+    margin-left: auto;
+    margin-right: auto;
   }
   .doc.theme-modern .doc-meta {
-    margin-top: 28px;
-    justify-content: flex-start;
-    gap: 28px;
-    color: #c2a577;
-    font-size: 12px;
+    justify-content: center;
+    gap: 24px;
+    color: #888;
+    font-size: 11px;
     letter-spacing: 1px;
     text-transform: uppercase;
   }
-  .doc.theme-modern .doc-meta strong {
-    color: rgba(255,255,255,0.6);
-    font-weight: 500;
-    margin-right: 6px;
+  .doc.theme-modern .doc-meta strong { color: #555; font-weight: 500; margin-right: 4px; }
+  .doc.theme-modern .doc-meta [contenteditable="true"] { color: #1a1a1a; font-weight: 600; }
+
+  /* 본문 영역: 좌측 세로 라인 + 번호 원형 */
+  .doc.theme-modern .sections-body {
+    position: relative;
+    padding: 30px 80px 50px 200px;
+    margin: 0;
   }
-  .doc.theme-modern .doc-meta [contenteditable="true"] { color: #fff; font-weight: 600; }
+  .doc.theme-modern .sections-body::before {
+    content: '';
+    position: absolute;
+    left: 144px;
+    top: 50px;
+    bottom: 70px;
+    width: 1px;
+    background: #aaa;
+  }
 
   .doc.theme-modern h2 {
-    font-size: 22px;
-    color: #fff;
+    position: relative;
     border: none;
-    padding: 0 60px 0 100px;
-    margin: 40px 0 16px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
+    padding: 0;
+    margin: 38px 0 10px;
+    font-size: 17px;
     font-weight: 700;
-    letter-spacing: -0.3px;
+    color: #1a1a1a;
+    letter-spacing: 0.2px;
+    display: block;
   }
+  .doc.theme-modern h2:first-child { margin-top: 0; }
   .doc.theme-modern h2 .num {
-    background: #c2a577;
-    color: #2d3138;
-    padding: 4px 10px;
-    font-size: 13px;
+    position: absolute;
+    left: -78px;
+    top: -8px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #1a1a1a;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
     font-weight: 700;
-    letter-spacing: 0.5px;
-    border-radius: 0;
-    margin-right: 4px;
+    margin: 0;
+    padding: 0;
+    z-index: 1;
+    box-shadow: 0 0 0 6px #efefef;
   }
   .doc.theme-modern .sub-h {
-    padding: 0 60px 0 100px;
-    color: #f3f4f6;
-    font-size: 14px;
-    margin: 22px 0 8px;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-    text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    gap: 10px;
     border: none;
+    padding: 0;
+    margin: 18px 0 6px;
+    color: #1a1a1a;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: none;
+    letter-spacing: 0;
+    display: block;
   }
-  .doc.theme-modern .sub-h::before {
-    content: '';
-    display: inline-block;
-    width: 24px; height: 2px;
-    background: #c2a577;
+  .doc.theme-modern .sub-h::before { display: none; content: none; }
+  .doc.theme-modern .sub-h .num {
+    color: #999;
+    font-weight: 500;
+    margin-right: 4px;
   }
   .doc.theme-modern p,
   .doc.theme-modern ul {
-    margin-left: 100px;
-    margin-right: 60px;
-    color: #d1d5db;
+    color: #6b6b6b;
+    font-size: 13px;
+    line-height: 1.75;
+    margin-left: 0;
+    margin-right: 0;
   }
-  .doc.theme-modern ul li::marker { color: #c2a577; }
+  .doc.theme-modern ul { padding-left: 18px; }
+  .doc.theme-modern ul li::marker { color: #999; }
+
   .doc.theme-modern table {
-    margin-left: 100px;
-    margin-right: 60px;
-    width: calc(100% - 160px);
+    margin: 8px 0 12px;
+    width: 100%;
     border: none;
+    border-collapse: collapse;
   }
   .doc.theme-modern th {
-    background: #c2a577;
-    color: #2d3138;
+    background: transparent;
+    color: #1a1a1a;
     border: none;
-    font-weight: 700;
-    padding: 10px 14px;
-    letter-spacing: 0.3px;
+    border-bottom: 1px solid #bbb;
+    font-weight: 600;
+    padding: 8px 10px;
+    text-align: left;
+    width: 28%;
   }
   .doc.theme-modern td {
-    border: none;
-    border-bottom: 1px solid #404550;
-    background: #353a42;
-    padding: 10px 14px;
-    color: #e5e7eb;
-  }
-  .doc.theme-modern tr:nth-child(even) td { background: #3a4049; }
-  .doc.theme-modern .doc-footer {
-    margin: 56px 0 0;
     background: transparent;
-    color: #c2a577;
-    padding: 18px 60px 28px 100px;
+    color: #5a5a5a;
     border: none;
-    border-top: 1px solid #404550;
-    font-size: 11px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    text-align: left;
+    border-bottom: 1px solid #d8d8d8;
+    padding: 8px 10px;
   }
-  /* 미리보기 인라인 편집 호버/포커스 색을 다크 배경에 맞게 */
-  .doc.theme-modern [contenteditable="true"]:hover { background: rgba(194,165,119,0.15); }
-  .doc.theme-modern [contenteditable="true"]:focus { background: rgba(194,165,119,0.25); box-shadow: 0 0 0 2px rgba(194,165,119,0.5); }
+
+  .doc.theme-modern .doc-footer {
+    margin: 0;
+    background: #2a2a2a;
+    color: #fff;
+    padding: 22px 60px;
+    border: none;
+    text-align: center;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+  }
+  .doc.theme-modern .doc-footer::before { display: none; content: none; }
+
+  /* 인라인 편집 호버/포커스 */
+  .doc.theme-modern [contenteditable="true"]:hover { background: #e2e2e2; }
+  .doc.theme-modern [contenteditable="true"]:focus { background: #fff8d8; box-shadow: 0 0 0 2px rgba(0,0,0,0.2); }
   .doc.theme-modern .ed-empty.ed-text::before,
-  .doc.theme-modern .ed-list.ed-empty li:empty::before { color: rgba(255,255,255,0.35); }
+  .doc.theme-modern .ed-list.ed-empty li:empty::before { color: #aaa; }
+
 
   /* ===== 테마: 미니멀 ===== */
   .doc.theme-minimal {
@@ -1057,11 +1081,13 @@ function renderDoc() {
     </div>
   `;
 
+  html += '<div class="sections-body">';
   let n = 1;
   SCHEMA.forEach(s => {
     if (!state.enabled[s.id]) return;
     html += sectionDocHTML(s, n++, docType);
   });
+  html += '</div>';
 
   html += `<div class="doc-footer">
     ${escapeHTML(v.org || '')} ${v.org && v.author ? '·' : ''} ${escapeHTML(v.author || '')}
@@ -1279,7 +1305,7 @@ function exportJSON() {
 // 테마별 색상 팔레트
 const THEMES = {
   classic: { primary: '2C5AA0', dark: '1E3F73', accent: '2C5AA0', tableHead: 'EEF3FB' },
-  modern:  { primary: '1D2733', dark: '1D2733', accent: 'C2A577', tableHead: '1D2733' },
+  modern:  { primary: '1A1A1A', dark: '1A1A1A', accent: '1A1A1A', tableHead: 'EFEFEF' },
   minimal: { primary: '1A1A1A', dark: '000000', accent: '888888', tableHead: 'FFFFFF' }
 };
 function currentTheme() { return localStorage.getItem(THEME_KEY) || 'classic'; }
@@ -1305,19 +1331,20 @@ function exportWord() {
       .doc-meta { text-align: center; }
     `,
     modern: `
-      body { background: #2D3138; color: #E5E7EB; }
-      h1 { font-size: 32pt; text-align: left; margin: 0 0 10pt; color: #fff; font-weight: 800; letter-spacing: -0.5pt; }
-      h2 { font-size: 18pt; color: #FFFFFF !important; border: none; padding: 0; margin: 28pt 0 10pt; font-weight: 700; }
-      h2 .num { background: #C2A577; color: #2D3138; padding: 2pt 8pt; margin-right: 8pt; font-size: 12pt; font-weight: 700; }
-      h3, .sub-h { color: #F3F4F6 !important; padding-left: 0; font-weight: 700; text-transform: uppercase; font-size: 11pt; letter-spacing: 0.5pt; margin: 16pt 0 6pt; }
-      .doc-type { color: #C2A577; letter-spacing: 5pt; font-weight: 600; margin-bottom: 10pt; text-transform: uppercase; font-size: 9pt; }
-      .doc-header { background: #2D3138; color: #fff; padding: 30pt 30pt 36pt; margin: -10pt -10pt 24pt; text-align: left; border: none; }
-      .doc-meta { text-align: left; color: #C2A577; margin-top: 14pt; letter-spacing: 1pt; }
-      .doc-meta strong { color: #9CA3AF; margin-right: 4pt; }
-      p, ul, li { color: #D1D5DB !important; }
-      th { background: #C2A577 !important; color: #2D3138 !important; border: none !important; font-weight: 700 !important; }
-      td { background: #353A42 !important; color: #E5E7EB !important; border: none !important; border-bottom: 0.5pt solid #404550 !important; }
-      .doc-footer { background: #2D3138; color: #C2A577; padding: 12pt 24pt; border: none !important; border-top: 0.5pt solid #404550 !important; text-align: left; letter-spacing: 2pt; text-transform: uppercase; }
+      body { background: #EFEFEF; color: #2A2A2A; }
+      h1 { font-family: 'Playfair Display','Noto Serif KR','Times New Roman',serif; font-style: italic; font-size: 30pt; text-align: center; margin: 0 0 10pt; color: #1A1A1A; font-weight: 500; }
+      h2 { font-size: 14pt; color: #1A1A1A; border: none; padding: 0; margin: 22pt 0 8pt; font-weight: 700; }
+      h2 .num { display: inline-block; width: 24pt; height: 24pt; line-height: 24pt; background: #1A1A1A; color: #fff; border-radius: 50%; text-align: center; margin-right: 10pt; font-size: 11pt; font-weight: 700; }
+      h3, .sub-h { color: #1A1A1A; padding: 0; font-weight: 700; font-size: 11pt; margin: 14pt 0 4pt; text-transform: none; letter-spacing: 0; }
+      h3 .num, .sub-h .num { color: #999; font-weight: 500; margin-right: 4pt; }
+      .doc-type { text-align: center; color: #777; letter-spacing: 4pt; font-weight: 500; margin-bottom: 14pt; text-transform: uppercase; font-size: 9pt; }
+      .doc-header { background: transparent; color: #1A1A1A; padding: 24pt 0; margin: 0 0 18pt; text-align: center; border: none; }
+      .doc-meta { text-align: center; color: #888; margin-top: 12pt; letter-spacing: 1pt; text-transform: uppercase; font-size: 9pt; }
+      .doc-meta strong { color: #555; margin-right: 4pt; }
+      p, ul, li { color: #6B6B6B !important; line-height: 1.7; }
+      th { background: transparent !important; color: #1A1A1A !important; border: none !important; border-bottom: 0.75pt solid #BBB !important; font-weight: 600 !important; }
+      td { background: transparent !important; color: #5A5A5A !important; border: none !important; border-bottom: 0.5pt solid #D8D8D8 !important; }
+      .doc-footer { background: #2A2A2A; color: #fff; padding: 14pt 24pt; border: none !important; text-align: center; letter-spacing: 0.5pt; text-transform: none; font-size: 10pt; }
     `,
     minimal: `
       h1 { font-size: 26pt; text-align: left; margin: 0 0 10pt; font-weight: 300; }
@@ -1396,15 +1423,17 @@ function exportPPT() {
   if (v.date) metaParts.push(`작성일: ${formatDate(v.date)}`);
 
   if (themeName === 'modern') {
-    // 다크 그레이 + 베이지 좌측 스트립
-    cover.background = { color: '2D3138' };
-    cover.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: 0.8, h: 7.5, fill: { color: 'C2A577' } });
-    if (logo) cover.addImage({ data: logo, x: 1.2, y: 0.5, w: 2.0, h: 1.0, sizing: { type: 'contain', w: 2.0, h: 1.0 } });
-    cover.addText(docType, { x: 1.2, y: 2.0, w: 11.5, h: 0.4, align: 'left', fontSize: 14, color: 'C2A577', bold: true, charSpacing: 8 });
-    cover.addText(title, { x: 1.2, y: 2.5, w: 11.5, h: 2.0, align: 'left', fontSize: 48, color: 'FFFFFF', bold: true });
+    // 라이트 그레이 + 이탤릭 세리프 표지 + 다크 푸터
+    cover.background = { color: 'EFEFEF' };
+    if (logo) cover.addImage({ data: logo, x: 5.66, y: 0.7, w: 2.0, h: 1.0, sizing: { type: 'contain', w: 2.0, h: 1.0 } });
+    cover.addText(docType, { x: 0.5, y: 2.2, w: 12.33, h: 0.4, align: 'center', fontSize: 12, color: '777777', charSpacing: 6 });
+    cover.addText(title, { x: 1.0, y: 2.7, w: 11.33, h: 2.2, align: 'center', fontSize: 44, color: '1A1A1A', italic: true, fontFace: 'Playfair Display' });
     if (metaParts.length) {
-      cover.addText(metaParts.join('   ·   '), { x: 1.2, y: 5.2, w: 11.5, h: 0.5, align: 'left', fontSize: 13, color: 'C2A577', charSpacing: 2 });
+      cover.addText(metaParts.join('   ·   '), { x: 0.5, y: 5.3, w: 12.33, h: 0.5, align: 'center', fontSize: 11, color: '888888', charSpacing: 2 });
     }
+    // 다크 푸터 바
+    cover.addShape(pptx.ShapeType.rect, { x: 0, y: 6.85, w: 13.33, h: 0.65, fill: { color: '2A2A2A' } });
+    cover.addText(`${v.org || ''}${v.org && v.author ? '  ·  ' : ''}${v.author || ''}`, { x: 0.5, y: 6.9, w: 12.33, h: 0.55, align: 'center', fontSize: 12, color: 'FFFFFF' });
   } else if (themeName === 'minimal') {
     cover.background = { color: 'FFFFFF' };
     if (logo) cover.addImage({ data: logo, x: 0.8, y: 0.7, w: 2.0, h: 1.0, sizing: { type: 'contain', w: 2.0, h: 1.0 } });
@@ -1430,25 +1459,26 @@ function exportPPT() {
     if (!state.enabled[s.id]) return;
     n++;
     const slide = pptx.addSlide();
-    // 모던 테마는 슬라이드 전체 배경을 다크 그레이로
     const isModern = themeName === 'modern';
-    slide.background = { color: isModern ? '2D3138' : 'FFFFFF' };
-    const headerColor = isModern ? '2D3138' : PRIMARY;
-    const sectionTitle = `${n}. ${getTitle(s.id, s.title, docType)}`;
-    // 상단 헤더 바 (모던은 좌측 베이지 스트립)
+    slide.background = { color: isModern ? 'EFEFEF' : 'FFFFFF' };
+    const sectionTitleText = getTitle(s.id, s.title, docType);
     if (isModern) {
-      slide.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: 0.4, h: 7.5, fill: { color: 'C2A577' } });
+      // 좌측 번호 원형 + 제목
+      slide.addShape(pptx.ShapeType.ellipse, { x: 0.5, y: 0.5, w: 0.7, h: 0.7, fill: { color: '1A1A1A' }, line: { color: '1A1A1A' } });
+      slide.addText(String(n), { x: 0.5, y: 0.5, w: 0.7, h: 0.7, align: 'center', valign: 'middle', fontSize: 20, color: 'FFFFFF', bold: true });
+      slide.addText(sectionTitleText, { x: 1.5, y: 0.55, w: 11.3, h: 0.6, fontSize: 22, color: '1A1A1A', bold: true });
+      // 다크 푸터
+      slide.addShape(pptx.ShapeType.rect, { x: 0, y: 6.85, w: 13.33, h: 0.65, fill: { color: '2A2A2A' } });
+      slide.addText(`${v.org || ''}${v.org && v.author ? '  ·  ' : ''}${v.author || ''}`, { x: 0.5, y: 6.9, w: 12.33, h: 0.55, align: 'center', fontSize: 11, color: 'FFFFFF' });
     } else {
-      slide.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: 13.33, h: 0.7, fill: { color: headerColor } });
+      slide.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: 13.33, h: 0.7, fill: { color: PRIMARY } });
+      slide.addText(`${n}. ${sectionTitleText}`, { x: 0.4, y: 0.05, w: 12.5, h: 0.6, fontSize: 22, color: 'FFFFFF', bold: true });
     }
-    slide.addText(sectionTitle, isModern
-      ? { x: 0.7, y: 0.4, w: 12.5, h: 0.6, fontSize: 24, color: 'FFFFFF', bold: true }
-      : { x: 0.4, y: 0.05, w: 12.5, h: 0.6, fontSize: 22, color: 'FFFFFF', bold: true });
 
-    const subColor = isModern ? 'C2A577' : DARK;
-    const bodyTextColor = isModern ? 'E5E7EB' : TEXT;
+    const subColor = isModern ? '1A1A1A' : DARK;
+    const bodyTextColor = isModern ? '6B6B6B' : TEXT;
 
-    let bodyY = isModern ? 1.4 : 1.0;
+    let bodyY = isModern ? 1.5 : 1.0;
     if (s.children) {
       s.children.forEach((c, i) => {
         const subTitle = `${n}-${i+1}) ${getTitle(c.id, c.label, docType)}`;
@@ -1477,8 +1507,8 @@ function exportPPT() {
         const val = v[f.id] || '';
         const thLabel = getTitle('th_' + f.id, f.label);
         return [
-          { text: thLabel, options: { bold: true, fill: { color: isModern ? 'C2A577' : 'EEF3FB' }, color: isModern ? '2D3138' : DARK, valign: 'middle' } },
-          { text: val || '-', options: { color: isModern ? 'E5E7EB' : TEXT, fill: isModern ? { color: '353A42' } : undefined, valign: 'middle' } }
+          { text: thLabel, options: { bold: true, fill: isModern ? { color: 'EFEFEF' } : { color: 'EEF3FB' }, color: isModern ? '1A1A1A' : DARK, valign: 'middle' } },
+          { text: val || '-', options: { color: isModern ? '5A5A5A' : TEXT, valign: 'middle' } }
         ];
       });
       slide.addTable(rows, {
