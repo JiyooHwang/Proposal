@@ -403,6 +403,189 @@
     padding-top: 16px;
   }
 
+  /* ===== 테마: 모던 ===== */
+  .doc.theme-modern {
+    font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+    color: #1a1a1a;
+    padding: 0;
+    overflow: hidden;
+  }
+  .doc.theme-modern .doc-logo { padding: 28px 60px 0; margin-bottom: 0; }
+  .doc.theme-modern .doc-header {
+    background: linear-gradient(135deg, #1a3a78 0%, #4361b5 60%, #5b8def 100%);
+    color: #fff;
+    padding: 50px 60px 60px;
+    margin: 0 0 36px;
+    border: none;
+    text-align: left;
+    position: relative;
+  }
+  .doc.theme-modern .doc-header::after {
+    content: '';
+    position: absolute;
+    left: 60px; bottom: 30px;
+    width: 60px; height: 4px;
+    background: #ffd166;
+  }
+  .doc.theme-modern .doc-type {
+    color: #ffd166;
+    letter-spacing: 6px;
+    font-size: 12px;
+    margin-bottom: 14px;
+  }
+  .doc.theme-modern .doc-title {
+    color: #fff;
+    font-size: 38px;
+    font-weight: 800;
+    line-height: 1.25;
+    margin-bottom: 24px;
+  }
+  .doc.theme-modern .doc-meta {
+    justify-content: flex-start;
+    gap: 24px;
+    color: #d6e4ff;
+    font-size: 13px;
+  }
+  .doc.theme-modern .doc-meta strong { color: #ffd166; }
+  .doc.theme-modern h2 {
+    font-size: 22px;
+    color: #1a3a78;
+    border: none;
+    padding: 0 60px;
+    margin: 36px 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .doc.theme-modern h2 .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px; height: 38px;
+    background: #1a3a78;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 16px;
+    font-weight: 700;
+    margin-right: 0;
+  }
+  .doc.theme-modern .sub-h {
+    padding: 0 60px;
+    color: #4361b5;
+    font-size: 15px;
+    border-left: 3px solid #ffd166;
+    margin-left: 60px;
+    padding-left: 12px;
+  }
+  .doc.theme-modern p,
+  .doc.theme-modern ul,
+  .doc.theme-modern table { margin-left: 60px; margin-right: 60px; width: auto; }
+  .doc.theme-modern table { width: calc(100% - 120px); }
+  .doc.theme-modern th {
+    background: #f0f4fb;
+    color: #1a3a78;
+    border-color: #d8e0ee;
+  }
+  .doc.theme-modern td { border-color: #e6ebf3; }
+  .doc.theme-modern tr:nth-child(even) td { background: #fafbfd; }
+  .doc.theme-modern .doc-footer {
+    margin: 60px 60px 0;
+    background: #1a3a78;
+    color: #d6e4ff;
+    padding: 16px 24px;
+    border: none;
+    border-radius: 4px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* ===== 테마: 미니멀 ===== */
+  .doc.theme-minimal {
+    font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+    color: #2a2a2a;
+    padding: 80px 90px;
+    line-height: 1.85;
+  }
+  .doc.theme-minimal .doc-logo { margin-bottom: 32px; }
+  .doc.theme-minimal .doc-header {
+    border: none;
+    border-bottom: 1px solid #d0d0d0;
+    padding-bottom: 36px;
+    margin-bottom: 48px;
+    text-align: left;
+  }
+  .doc.theme-minimal .doc-type {
+    color: #888;
+    letter-spacing: 3px;
+    font-size: 11px;
+    margin-bottom: 8px;
+    font-weight: 400;
+  }
+  .doc.theme-minimal .doc-title {
+    color: #1a1a1a;
+    font-size: 30px;
+    font-weight: 300;
+    letter-spacing: -0.5px;
+    margin-bottom: 18px;
+  }
+  .doc.theme-minimal .doc-meta {
+    justify-content: flex-start;
+    gap: 24px;
+    color: #777;
+    font-size: 12px;
+  }
+  .doc.theme-minimal .doc-meta strong { color: #1a1a1a; font-weight: 500; }
+  .doc.theme-minimal h2 {
+    border: none;
+    padding: 0;
+    color: #1a1a1a;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin: 44px 0 16px;
+    border-bottom: 2px solid #1a1a1a;
+    padding-bottom: 8px;
+    display: inline-block;
+    min-width: 200px;
+  }
+  .doc.theme-minimal h2 .num {
+    color: #b0b0b0;
+    font-weight: 400;
+    margin-right: 8px;
+  }
+  .doc.theme-minimal .sub-h {
+    color: #555;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin-top: 18px;
+  }
+  .doc.theme-minimal th {
+    background: transparent;
+    color: #555;
+    border: none;
+    border-bottom: 1px solid #e5e5e5;
+    font-weight: 500;
+    padding: 10px 8px;
+    width: 25%;
+  }
+  .doc.theme-minimal td {
+    border: none;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 10px 8px;
+  }
+  .doc.theme-minimal .doc-footer {
+    margin-top: 64px;
+    border-top: 1px solid #e5e5e5;
+    padding-top: 18px;
+    color: #999;
+    text-align: left;
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+
   /* Print */
   @media print {
     header, .form-panel { display: none !important; }
@@ -493,6 +676,13 @@
       </div>
       <label>작성일</label>
       <input id="date" type="date" oninput="render()" />
+
+      <label>디자인 테마</label>
+      <select id="docTheme" onchange="onThemeChange()">
+        <option value="classic">클래식 (기본·격식)</option>
+        <option value="modern">모던 (강조·트렌디)</option>
+        <option value="minimal">미니멀 (여백·절제)</option>
+      </select>
 
       <label>회사 로고 <span class="hint-inline">(PNG·JPG·SVG, 자동 비율 유지)</span></label>
       <div class="logo-uploader">
@@ -790,6 +980,11 @@ function renderDoc() {
   const v = state.values;
   const docType = v.docType || '제안서';
 
+  // 테마 적용
+  const theme = localStorage.getItem(THEME_KEY) || 'classic';
+  const docEl = $('doc');
+  docEl.className = 'doc theme-' + theme;
+
   const logo = getLogo();
   const logoPos = localStorage.getItem(LOGO_POS_KEY) || 'center';
   const logoSize = localStorage.getItem(LOGO_SIZE_KEY) || 'medium';
@@ -825,6 +1020,13 @@ function render() { renderForm(); renderDoc(); }
 
 // 미리보기 인라인 편집 → state 동기화 (폼 input도 함께 갱신, 단 doc은 재렌더하지 않음)
 // ----- 회사 로고 -----
+const THEME_KEY = 'proposal-tool-theme';
+
+function onThemeChange() {
+  localStorage.setItem(THEME_KEY, $('docTheme').value);
+  renderDoc();
+}
+
 const LOGO_KEY = 'proposal-tool-logo';
 const LOGO_POS_KEY = 'proposal-tool-logo-pos';
 const LOGO_SIZE_KEY = 'proposal-tool-logo-size';
@@ -1020,31 +1222,69 @@ function exportJSON() {
 }
 
 // ----- Word(.doc) 내보내기 -----
+// 테마별 색상 팔레트
+const THEMES = {
+  classic: { primary: '2C5AA0', dark: '1E3F73', accent: '2C5AA0', tableHead: 'EEF3FB' },
+  modern:  { primary: '1A3A78', dark: '0F2350', accent: 'FFD166', tableHead: 'F0F4FB' },
+  minimal: { primary: '1A1A1A', dark: '000000', accent: '888888', tableHead: 'FFFFFF' }
+};
+function currentTheme() { return localStorage.getItem(THEME_KEY) || 'classic'; }
+function themePalette() { return THEMES[currentTheme()] || THEMES.classic; }
+
 function exportWord() {
   const v = state.values;
   const title = v.title || 'proposal';
+  const theme = currentTheme();
+  const c = themePalette();
   // 미리보기 그대로의 HTML을 가져오되 contenteditable/data-* 속성 제거
   const cleaned = $('doc').cloneNode(true);
   cleaned.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
   cleaned.querySelectorAll('.ed-empty').forEach(el => el.classList.remove('ed-empty'));
 
+  // 테마별 Word용 스타일
+  const themeStyles = {
+    classic: `
+      h1 { font-size: 22pt; text-align: center; margin: 0 0 12pt; }
+      h2 { font-size: 14pt; color: #${c.dark}; border-left: 4pt solid #${c.primary}; padding-left: 8pt; margin: 18pt 0 8pt; }
+      .doc-type { text-align: center; color: #${c.primary}; letter-spacing: 4pt; font-weight: bold; margin-bottom: 6pt; }
+      .doc-header { border-bottom: 1.5pt solid #${c.primary}; padding-bottom: 12pt; margin-bottom: 16pt; text-align: center; }
+      .doc-meta { text-align: center; }
+    `,
+    modern: `
+      h1 { font-size: 28pt; text-align: left; margin: 0 0 14pt; color: #fff; }
+      h2 { font-size: 18pt; color: #${c.dark}; border: none; padding: 0; margin: 22pt 0 10pt; }
+      h2 .num { background: #${c.dark}; color: #fff; padding: 2pt 9pt; border-radius: 50%; margin-right: 8pt; font-size: 14pt; }
+      .doc-type { color: #${c.accent}; letter-spacing: 6pt; font-weight: bold; margin-bottom: 8pt; }
+      .doc-header { background: #${c.dark}; color: #fff; padding: 30pt; margin: -10pt -10pt 20pt; text-align: left; border: none; }
+      .doc-meta { text-align: left; color: #d6e4ff; }
+      .doc-meta strong { color: #${c.accent}; }
+      .sub-h { color: #${c.dark}; border-left: 3pt solid #${c.accent}; padding-left: 8pt; }
+    `,
+    minimal: `
+      h1 { font-size: 26pt; text-align: left; margin: 0 0 10pt; font-weight: 300; }
+      h2 { font-size: 13pt; color: #1a1a1a; border: none; border-bottom: 1.5pt solid #1a1a1a; padding: 0 0 4pt; margin: 22pt 0 10pt; text-transform: uppercase; letter-spacing: 1pt; display: inline-block; }
+      h2 .num { color: #b0b0b0; margin-right: 6pt; }
+      .doc-type { text-align: left; color: #888; letter-spacing: 3pt; margin-bottom: 6pt; }
+      .doc-header { border: none; border-bottom: 0.75pt solid #d0d0d0; padding-bottom: 18pt; margin-bottom: 28pt; text-align: left; }
+      .doc-meta { text-align: left; color: #777; }
+      th { background: transparent !important; border: none !important; border-bottom: 0.75pt solid #e5e5e5 !important; }
+      td { border: none !important; border-bottom: 0.75pt solid #f0f0f0 !important; }
+    `
+  };
+
   const wordCSS = `
     <style>
       body { font-family: '맑은 고딕','Malgun Gothic',sans-serif; font-size: 11pt; line-height: 1.6; color: #222; }
-      h1 { font-size: 22pt; text-align: center; margin: 0 0 12pt; }
-      h2 { font-size: 14pt; color: #1e3f73; border-left: 4pt solid #2c5aa0; padding-left: 8pt; margin: 18pt 0 8pt; }
+      ${themeStyles[theme] || themeStyles.classic}
       h3 { font-size: 12pt; margin: 10pt 0 4pt; }
-      .doc-type { text-align: center; color: #2c5aa0; letter-spacing: 4pt; font-weight: bold; margin-bottom: 6pt; }
-      .doc-meta { text-align: center; font-size: 10pt; color: #666; margin-bottom: 10pt; }
-      .doc-meta span { margin: 0 8pt; }
-      .doc-header { border-bottom: 1.5pt solid #2c5aa0; padding-bottom: 12pt; margin-bottom: 16pt; }
+      .doc-meta span { margin: 0 8pt; font-size: 10pt; }
       .doc-logo { text-align: center; margin-bottom: 12pt; }
       .doc-logo.pos-left { text-align: left; }
       .doc-logo.pos-right { text-align: right; }
       .doc-logo img { max-height: 80pt; }
       table { border-collapse: collapse; width: 100%; margin: 8pt 0; }
       th, td { border: 0.75pt solid #999; padding: 5pt 8pt; vertical-align: top; }
-      th { background: #eef3fb; width: 25%; text-align: left; }
+      th { background: #${c.tableHead}; width: 25%; text-align: left; color: #${c.dark}; }
       ul { margin: 4pt 0 4pt 18pt; padding: 0; }
       li { margin-bottom: 2pt; }
       .num { color: inherit; }
@@ -1080,8 +1320,10 @@ function exportPPT() {
   pptx.author = v.author || '';
   pptx.company = v.org || '';
 
-  const PRIMARY = '2C5AA0';
-  const DARK = '1E3F73';
+  const c = themePalette();
+  const PRIMARY = c.primary;
+  const DARK = c.dark;
+  const ACCENT = c.accent;
   const TEXT = '222222';
   const MUTED = '666666';
 
@@ -1328,6 +1570,9 @@ window.addEventListener('DOMContentLoaded', () => {
   const savedSize = localStorage.getItem(LOGO_SIZE_KEY);
   if (savedPos) $('logoPosition').value = savedPos;
   if (savedSize) $('logoSize').value = savedSize;
+  // 테마 복원
+  const savedTheme = localStorage.getItem(THEME_KEY);
+  if (savedTheme) $('docTheme').value = savedTheme;
   refreshLogoPreview();
   bindDocEditing();
   bindFormTitleEditing();
