@@ -135,7 +135,17 @@
     font-size: 14px;
     font-weight: 600;
     color: var(--primary-dark);
+    user-select: text;
+    -webkit-user-select: text;
+    outline: none;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: background 0.15s;
+    min-width: 60px;
   }
+  .section-card-title:hover { background: #e3ebf7; }
+  .section-card-title:focus { background: #fff8d8; box-shadow: 0 0 0 2px rgba(44,90,160,0.25); }
+  .section-card-head { cursor: default; }
   .section-card-actions { display: flex; gap: 6px; align-items: center; }
   .mini-btn {
     background: #fff;
@@ -626,7 +636,7 @@ function sectionCardHTML(s, docType) {
   return `
     <div class="section-card ${enabled ? '' : 'disabled collapsed'}">
       <div class="section-card-head">
-        <span class="section-card-title" data-card-id="${s.id}" data-fallback="${escapeHTML(fallback)}">${escapeHTML(title)}</span>
+        <span class="section-card-title" data-card-id="${s.id}" data-fallback="${escapeHTML(fallback)}" contenteditable="true">${escapeHTML(title)}</span>
         <div class="section-card-actions">
           ${enabled
             ? `<button class="mini-btn danger" onclick="toggleSection('${s.id}', false)">제외</button>`
@@ -728,6 +738,31 @@ function renderDoc() {
 function render() { renderForm(); renderDoc(); }
 
 // 미리보기 인라인 편집 → state 동기화 (폼 input도 함께 갱신, 단 doc은 재렌더하지 않음)
+// 폼 카드 제목 편집 → state.titles 동기화 + 미리보기 헤딩에도 즉시 반영
+function bindFormTitleEditing() {
+  const host = $('sectionsHost');
+  if (!host || host._titleBound) return;
+  host._titleBound = true;
+  host.addEventListener('input', (e) => {
+    const target = e.target.closest('.section-card-title[data-card-id]');
+    if (!target) return;
+    const id = target.dataset.cardId;
+    const t = target.innerText.trim();
+    if (t) state.titles[id] = t; else delete state.titles[id];
+    saveState();
+    // 오른쪽 미리보기의 같은 섹션 제목도 동기화
+    const docTitle = document.querySelector(`#doc [data-title="${id}"]`);
+    if (docTitle) docTitle.textContent = t || target.dataset.fallback || '';
+  });
+  // Enter로 줄바꿈되지 않도록 막기 (제목은 한 줄)
+  host.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && e.target.matches('.section-card-title')) {
+      e.preventDefault();
+      e.target.blur();
+    }
+  });
+}
+
 function bindDocEditing() {
   const doc = $('doc');
   if (!doc || doc._editBound) return;
@@ -1006,6 +1041,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if (savedKey) $('aiApiKey').value = savedKey;
   if (savedModel) $('aiModel').value = savedModel;
   bindDocEditing();
+  bindFormTitleEditing();
   saveAndRender();
 });
 </script>
