@@ -288,6 +288,18 @@
   }
   .doc .doc-title.ed-empty::before { content: '제목을 입력하세요'; }
   .doc .ed-list { list-style: disc; }
+  .doc .num {
+    user-select: none;
+    -webkit-user-select: none;
+    color: inherit;
+    margin-right: 4px;
+  }
+  .doc h2 [contenteditable="true"],
+  .doc .sub-h [contenteditable="true"],
+  .doc th [contenteditable="true"] {
+    display: inline-block;
+    min-width: 40px;
+  }
 
   /* 인쇄 시 편집 강조 제거 */
   @media print {
@@ -510,7 +522,8 @@ function allInputIds() {
 // 상태: 입력값 + 섹션 enabled 여부
 const state = {
   values: {},
-  enabled: Object.fromEntries(SCHEMA.map(s => [s.id, s.id !== 'etc']))
+  enabled: Object.fromEntries(SCHEMA.map(s => [s.id, s.id !== 'etc'])),
+  titles: {}  // 사용자가 수정한 섹션/하위/표 제목 오버라이드 (key = id, value = string)
 };
 
 function pickTitle(t, docType) {
@@ -518,15 +531,21 @@ function pickTitle(t, docType) {
   return t[docType] || t.default || '';
 }
 
+// 사용자가 직접 수정한 제목이 있으면 그 값을, 없으면 기본 라벨을 반환
+function getTitle(id, defaultLabel, docType) {
+  if (state.titles[id]) return state.titles[id];
+  return typeof defaultLabel === 'string' ? defaultLabel : pickTitle(defaultLabel, docType);
+}
+
 function getData() {
-  return { values: { ...state.values }, enabled: { ...state.enabled } };
+  return { values: { ...state.values }, enabled: { ...state.enabled }, titles: { ...state.titles } };
 }
 
 function setData(data) {
   if (!data) return;
-  // v1 데이터 호환은 생략 (구조가 완전히 다름)
   if (data.values) state.values = { ...data.values };
   if (data.enabled) state.enabled = { ...state.enabled, ...data.enabled };
+  if (data.titles) state.titles = { ...data.titles };
 }
 
 function formatDate(iso) {
@@ -594,7 +613,8 @@ function fieldHTML(f, docType) {
 
 function sectionCardHTML(s, docType) {
   const enabled = state.enabled[s.id];
-  const title = pickTitle(s.title, docType);
+  const fallback = pickTitle(s.title, docType);
+  const title = getTitle(s.id, s.title, docType);
   let body = '';
   if (s.children) {
     body = s.children.map(c => fieldHTML(c, docType)).join('');
@@ -606,7 +626,7 @@ function sectionCardHTML(s, docType) {
   return `
     <div class="section-card ${enabled ? '' : 'disabled collapsed'}">
       <div class="section-card-head">
-        <span class="section-card-title">${escapeHTML(title)}</span>
+        <span class="section-card-title" data-card-id="${s.id}" data-fallback="${escapeHTML(fallback)}">${escapeHTML(title)}</span>
         <div class="section-card-actions">
           ${enabled
             ? `<button class="mini-btn danger" onclick="toggleSection('${s.id}', false)">제외</button>`
@@ -649,30 +669,31 @@ function editableTextHTML(id, val, tag = 'p') {
 // ----- 문서 미리보기 -----
 function sectionDocHTML(s, num, docType) {
   const v = state.values;
-  const title = pickTitle(s.title, docType);
+  const title = getTitle(s.id, s.title, docType);
   let inner = '';
   if (s.children) {
     inner = s.children.map((c, i) => {
-      const sub = pickTitle(c.label, docType);
+      const sub = getTitle(c.id, c.label, docType);
       const val = v[c.id] || '';
       const body = c.type === 'textarea'
         ? editableListHTML(c.id, val)
         : editableTextHTML(c.id, val);
-      return `<h3 class="sub-h">${num}-${i+1}) ${escapeHTML(sub)}</h3>${body}`;
+      return `<h3 class="sub-h"><span class="num">${num}-${i+1})</span> <span data-title="${c.id}" contenteditable="true">${escapeHTML(sub)}</span></h3>${body}`;
     }).join('');
   } else if (s.single) {
     inner = editableListHTML(s.single.id, v[s.single.id] || '');
   } else if (s.table) {
     const rows = s.table.map(f => {
       const val = v[f.id] || '';
+      const thLabel = getTitle('th_' + f.id, f.label);
       const cell = f.type === 'textarea'
         ? editableListHTML(f.id, val)
         : `<span data-bind="${f.id}" contenteditable="true" class="${val ? 'ed-text' : 'ed-text ed-empty'}">${escapeHTML(val)}</span>`;
-      return `<tr><th>${escapeHTML(f.label)}</th><td>${cell}</td></tr>`;
+      return `<tr><th><span data-title="th_${f.id}" contenteditable="true">${escapeHTML(thLabel)}</span></th><td>${cell}</td></tr>`;
     }).join('');
     inner = `<table>${rows}</table>`;
   }
-  return `<h2>${num}. ${escapeHTML(title)}</h2>${inner}`;
+  return `<h2><span class="num">${num}.</span> <span data-title="${s.id}" contenteditable="true">${escapeHTML(title)}</span></h2>${inner}`;
 }
 
 function renderDoc() {
@@ -712,10 +733,20 @@ function bindDocEditing() {
   if (!doc || doc._editBound) return;
   doc._editBound = true;
   doc.addEventListener('input', (e) => {
-    const target = e.target.closest('[data-bind], [data-list]');
+    const target = e.target.closest('[data-bind], [data-list], [data-title]');
     if (!target) return;
     const bindId = target.dataset.bind;
     const listId = target.dataset.list;
+    const titleId = target.dataset.title;
+    if (titleId) {
+      const t = target.innerText.trim();
+      if (t) state.titles[titleId] = t; else delete state.titles[titleId];
+      saveState();
+      // 왼쪽 폼 카드 헤더 텍스트도 즉시 동기화
+      const cardTitle = document.querySelector(`.section-card [data-card-id="${titleId}"]`);
+      if (cardTitle) cardTitle.textContent = t || cardTitle.dataset.fallback || cardTitle.textContent;
+      return;
+    }
     let id, val;
     if (bindId) {
       id = bindId;
@@ -761,6 +792,7 @@ function resetForm() {
   if (!confirm('모든 입력을 초기화하시겠습니까?')) return;
   state.values = {};
   state.enabled = Object.fromEntries(SCHEMA.map(s => [s.id, s.id !== 'etc']));
+  state.titles = {};
   localStorage.removeItem(STORAGE_KEY);
   bindHeader();
   saveAndRender();
