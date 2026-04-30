@@ -181,6 +181,38 @@
   }
   .chip-add:hover { background: #eef3fb; }
 
+  /* AI panel */
+  .ai-panel {
+    background: linear-gradient(135deg, #f4f1ff 0%, #eef3fb 100%);
+    border: 1px solid #d9d0fa;
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .ai-panel h3 {
+    border-bottom-color: #6c4dd6 !important;
+    color: #4a2fb5 !important;
+  }
+  .hint-inline { font-size: 11px; color: var(--muted); font-weight: 400; }
+  .ai-run-btn {
+    width: 100%;
+    background: #6c4dd6;
+    color: #fff;
+    padding: 10px;
+    font-weight: 600;
+    border-radius: 6px;
+    margin: 4px 0 6px;
+  }
+  .ai-run-btn:hover { background: #5839c2; }
+  .ai-run-btn:disabled { background: #b9adea; cursor: wait; }
+  .ai-status {
+    font-size: 12px;
+    min-height: 16px;
+    margin: 4px 0;
+  }
+  .ai-status.error { color: #b3261e; }
+  .ai-status.success { color: #1b7a3a; }
+  .ai-status.loading { color: #4a2fb5; }
+
   /* Document preview */
   .doc {
     max-width: 800px;
@@ -305,6 +337,34 @@
 <div class="layout">
   <!-- Form -->
   <div class="form-panel">
+    <div class="field-group ai-panel">
+      <h3>🤖 AI 자동 작성 (Gemini)</h3>
+      <label>Gemini API 키 <span class="hint-inline">(본인 키, 브라우저에만 저장)</span></label>
+      <input id="aiApiKey" type="password" placeholder="AIza..." autocomplete="off" />
+      <div class="row">
+        <div>
+          <label>모델</label>
+          <select id="aiModel">
+            <option value="gemini-2.5-flash">gemini-2.5-flash (빠름·저비용)</option>
+            <option value="gemini-2.5-pro">gemini-2.5-pro (고품질)</option>
+            <option value="gemini-2.0-flash">gemini-2.0-flash</option>
+          </select>
+        </div>
+        <div>
+          <label>적용 범위</label>
+          <select id="aiScope">
+            <option value="empty">빈 항목만 채우기</option>
+            <option value="all">전체 덮어쓰기</option>
+          </select>
+        </div>
+      </div>
+      <label>주제·키워드 (자유 서술 가능)</label>
+      <textarea id="aiKeywords" placeholder="예: 스마트시티 통합관제 플랫폼, AI 영상분석, 공공기관 대상, 12개월 사업, 예산 8억" rows="3"></textarea>
+      <button id="aiRunBtn" class="ai-run-btn" onclick="runAI()">AI로 자동 작성</button>
+      <div id="aiStatus" class="ai-status"></div>
+      <p class="hint">API 키 발급: aistudio.google.com/apikey · 키는 이 브라우저(localStorage)에만 저장되며 외부 서버로 전송되지 않습니다.</p>
+    </div>
+
     <div class="field-group">
       <h3>문서 기본 정보</h3>
       <label>문서 종류</label>
@@ -672,6 +732,138 @@ function importJSON(e) {
   reader.readAsText(file);
 }
 
+// ----- Gemini AI 자동 작성 -----
+const AI_KEY_STORAGE = 'proposal-tool-ai-key';
+const AI_MODEL_STORAGE = 'proposal-tool-ai-model';
+
+function aiSetStatus(msg, type) {
+  const el = $('aiStatus');
+  el.className = 'ai-status' + (type ? ' ' + type : '');
+  el.textContent = msg || '';
+}
+
+// 활성 섹션의 모든 필드를 평탄화하여 스펙 목록 생성
+function aiFieldSpec(docType) {
+  const specs = [];
+  SCHEMA.forEach(s => {
+    if (!state.enabled[s.id]) return;
+    const stitle = pickTitle(s.title, docType);
+    if (s.children) {
+      s.children.forEach(c => specs.push({
+        id: c.id, label: `${stitle} > ${pickTitle(c.label, docType)}`,
+        kind: c.type === 'textarea' ? 'list' : 'short'
+      }));
+    } else if (s.single) {
+      specs.push({ id: s.single.id, label: stitle, kind: 'list' });
+    } else if (s.table) {
+      s.table.forEach(f => specs.push({
+        id: f.id, label: `${stitle} > ${f.label}`,
+        kind: f.type === 'textarea' ? 'list' : 'short'
+      }));
+    }
+  });
+  return specs;
+}
+
+function buildAIPrompt(keywords, docType, scope) {
+  const specs = aiFieldSpec(docType);
+  const existing = {};
+  specs.forEach(sp => { if (state.values[sp.id]) existing[sp.id] = state.values[sp.id]; });
+  const fillTarget = scope === 'all'
+    ? specs
+    : specs.filter(sp => !state.values[sp.id]);
+
+  const fieldList = fillTarget.map(sp =>
+    `- "${sp.id}" (${sp.kind === 'list' ? '여러 줄, 각 줄은 한 항목' : '한 줄 짧게'}): ${sp.label}`
+  ).join('\n');
+
+  return `당신은 한국어 ${docType} 작성 전문가입니다. 아래 주제·키워드를 바탕으로 ${docType}의 각 항목을 한국어로 자연스럽게 작성하세요.
+
+[주제·키워드]
+${keywords}
+
+[문서 유형] ${docType}
+
+[기존 입력값(참고하여 일관성 유지)]
+${Object.keys(existing).length ? JSON.stringify(existing, null, 2) : '(없음)'}
+
+[작성해야 할 항목]
+${fieldList}
+
+[작성 규칙]
+- "list" 항목은 줄바꿈(\\n)으로 구분된 3~6개의 짧은 문장(각 줄 한 항목)
+- "short" 항목은 한두 줄의 간결한 표현
+- 과장 금지, 사실 기반 추정. 구체 숫자가 필요하면 합리적 추정치 사용
+- 회사명/금액 등 키워드에 명시된 값은 그대로 사용
+- 결과는 반드시 JSON 객체로만 반환 (키 = 항목 id, 값 = 문자열). 다른 텍스트 금지`;
+}
+
+async function callGemini(apiKey, model, prompt) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`;
+  const body = {
+    contents: [{ parts: [{ text: prompt }] }],
+    generationConfig: {
+      responseMimeType: 'application/json',
+      temperature: 0.7
+    }
+  };
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) {
+    const errTxt = await res.text();
+    throw new Error(`HTTP ${res.status}: ${errTxt.slice(0, 300)}`);
+  }
+  const data = await res.json();
+  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!text) throw new Error('응답이 비어 있습니다.');
+  // JSON 파싱 (코드펜스 제거)
+  const cleaned = text.trim().replace(/^```json\s*/i, '').replace(/^```\s*/, '').replace(/```\s*$/, '');
+  try {
+    return JSON.parse(cleaned);
+  } catch {
+    throw new Error('JSON 파싱 실패: ' + text.slice(0, 200));
+  }
+}
+
+async function runAI() {
+  const apiKey = $('aiApiKey').value.trim();
+  const model = $('aiModel').value;
+  const keywords = $('aiKeywords').value.trim();
+  const scope = $('aiScope').value;
+  const btn = $('aiRunBtn');
+
+  if (!apiKey) { aiSetStatus('API 키를 입력하세요.', 'error'); return; }
+  if (!keywords) { aiSetStatus('주제·키워드를 입력하세요.', 'error'); return; }
+
+  localStorage.setItem(AI_KEY_STORAGE, apiKey);
+  localStorage.setItem(AI_MODEL_STORAGE, model);
+
+  const docType = state.values.docType || '제안서';
+  const prompt = buildAIPrompt(keywords, docType, scope);
+
+  btn.disabled = true;
+  aiSetStatus('Gemini 호출 중... (수 초 소요)', 'loading');
+  try {
+    const result = await callGemini(apiKey, model, prompt);
+    let count = 0;
+    Object.entries(result).forEach(([k, v]) => {
+      if (typeof v !== 'string') return;
+      if (scope === 'empty' && state.values[k]) return;
+      state.values[k] = v;
+      count++;
+    });
+    saveAndRender();
+    aiSetStatus(`${count}개 항목이 작성되었습니다.`, 'success');
+  } catch (e) {
+    aiSetStatus('실패: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
 // 시작 시 복원
 window.addEventListener('DOMContentLoaded', () => {
   const saved = localStorage.getItem(STORAGE_KEY);
@@ -681,6 +873,11 @@ window.addEventListener('DOMContentLoaded', () => {
   if (!state.values.date) state.values.date = new Date().toISOString().slice(0, 10);
   if (!state.values.docType) state.values.docType = '제안서';
   bindHeader();
+  // AI 패널 복원
+  const savedKey = localStorage.getItem(AI_KEY_STORAGE);
+  const savedModel = localStorage.getItem(AI_MODEL_STORAGE);
+  if (savedKey) $('aiApiKey').value = savedKey;
+  if (savedModel) $('aiModel').value = savedModel;
   saveAndRender();
 });
 </script>
