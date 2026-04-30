@@ -523,7 +523,7 @@ function emptyOr(html, placeholder) {
 // 입력값 갱신
 function onInput(id, val) {
   state.values[id] = val;
-  saveAndRender();
+  saveAndRenderDoc();
 }
 
 function toggleSection(id, on) {
@@ -531,8 +531,17 @@ function toggleSection(id, on) {
   saveAndRender();
 }
 
-function saveAndRender() {
+function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(getData()));
+}
+
+function saveAndRenderDoc() {
+  saveState();
+  renderDoc();
+}
+
+function saveAndRender() {
+  saveState();
   renderForm();
   renderDoc();
 }
@@ -658,8 +667,13 @@ function bindHeader() {
     const el = $(id);
     if (!el) return;
     el.value = state.values[id] || '';
-    el.oninput = () => { state.values[id] = el.value; saveAndRender(); };
-    el.onchange = () => { state.values[id] = el.value; saveAndRender(); };
+    // docType은 라벨(제안/기획)이 바뀌므로 폼까지 재렌더, 그 외엔 미리보기만
+    const handler = () => {
+      state.values[id] = el.value;
+      if (id === 'docType') saveAndRender(); else saveAndRenderDoc();
+    };
+    el.oninput = handler;
+    el.onchange = handler;
   });
 }
 
